@@ -25,7 +25,7 @@ namespace FLangDictionary.Logic
         public void AddArtisticalTranslation(TextInLanguage artisticalTranslation)
         {
             Debug.Assert(artisticalTranslation != null);
-            m_artisticalTranslations.Add(artisticalTranslation.Language, artisticalTranslation);
+            m_artisticalTranslations.Add(artisticalTranslation.LanguageCode, artisticalTranslation);
         }
 
         // Словарь художественных переводов этой статьи. Ключ - язык текста-перевода
@@ -40,23 +40,59 @@ namespace FLangDictionary.Logic
         // Текст статьи
         public partial class TextInLanguage
         {
-            public TextInLanguage(string language, string text)
+            private string m_text;
+            private bool m_finished;
+
+            public TextInLanguage(string languageCode, string text, bool finished)
             {
-                Debug.Assert(language != null && language != string.Empty);
+                Debug.Assert(languageCode != null && languageCode != string.Empty);
                 Debug.Assert(text != null);
 
-                Language = language;
-                Text = text;
-
-                // Строим синтаксическую разметку для данного текста
+                LanguageCode = languageCode;
+                m_text = text;
+                m_finished = finished;
                 BuildSyntaxLayout();
             }
 
             // язык, на котором написана статья
-            public string Language { get; private set; }
-            // текст статьи
-            public string Text { get; private set; }
+            public string LanguageCode { get; private set; }
 
+            // Завершено ли редактирование текста вручную пользователем
+            public bool Finished
+            {
+                get
+                {
+                    return m_finished;
+                }
+
+                set
+                {
+                    bool changed = m_finished == value;
+                    m_finished = value;
+
+                    if (changed)
+                        BuildSyntaxLayout();
+                }
+            }
+
+            // текст статьи
+            public string Text
+            {
+                get
+                {
+                    return m_text;
+                }
+
+                set
+                {
+                    // Нельзя менять текст, если у него завершено редактирование
+                    Debug.Assert(!m_finished);
+
+                    m_text = value;
+                }
+            }
+
+            // Синтаксическая разметка. Доступна только, когда текст завершен (finished)
             public SyntaxLayout Layout { get { return m_syntaxLayout; } }
 
             // Получает строку текста из слов в составе синтаксической разметки
@@ -72,14 +108,19 @@ namespace FLangDictionary.Logic
             // Строит синтаксическую разметку по данному тексту и помещает ее в m_syntaxLayout
             void BuildSyntaxLayout()
             {
-                // Так как в разных языках разметка может формироваться по разному (например в испанском языке есть вопросительный знак непосредственно перед предложением,
-                // и он означает начало предложения, в других же языках такого нет), то будем запрашивать построитель разметок для языка этого текста, который построит
-                // разметку с учетом особенностей языка этой разметки
+                if (m_finished)
+                {
+                    // Так как в разных языках разметка может формироваться по разному (например в испанском языке есть вопросительный знак непосредственно перед предложением,
+                    // и он означает начало предложения, в других же языках такого нет), то будем запрашивать построитель разметок для языка этого текста, который построит
+                    // разметку с учетом особенностей языка этой разметки
 
-                // Запросим нужный построитель разметки по известному языку текста
-                SyntaxLayoutBuilder syntaxLayoutBuilder = SyntaxLayoutBuilder.GetBuilder(Language);
-                // Строим разметку
-                m_syntaxLayout = syntaxLayoutBuilder.Build(Text);
+                    // Запросим нужный построитель разметки по известному языку текста
+                    SyntaxLayoutBuilder syntaxLayoutBuilder = SyntaxLayoutBuilder.GetBuilder(LanguageCode);
+                    // Строим разметку
+                    m_syntaxLayout = syntaxLayoutBuilder.Build(Text);
+                }
+                else
+                    m_syntaxLayout = null;
             }
         }
     }

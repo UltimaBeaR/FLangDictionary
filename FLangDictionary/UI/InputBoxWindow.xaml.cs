@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace FLangDictionary.UI
 {
     /// <summary>
-    /// Логика взаимодействия для NewEntityWindow.xaml
+    /// Универсальное диалоговое окно, для запроса текстовой строки
+    /// При создании в конструкторе указываются названия заголовков и кнопок, а также делегат на функцию - обработчик изменения текстовой строки (можно оставить пустым)
+    /// В заданном делегате можно вернуть текст ошибки (он будет отображен в окне), в случае если нельзя принять эту текстовую строку
+    /// В итоге через свойство Input можно забрать из диалога напечатанную строку
     /// </summary>
     public partial class InputBoxWindow : Window
     {
@@ -28,7 +20,7 @@ namespace FLangDictionary.UI
 
         public string Input { get { return inputTextBox.Text; } }
 
-        public InputBoxWindow(string title = "Input box", string label = "Input", string okCaption = "Ok", string cancelCaption = "Cancel", string initialInput = "", ValidateInputCallback validateInputCallback = null)
+        public InputBoxWindow(string initialInput = "", string title = "Input box", string label = "Input", string okCaption = "Ok", string cancelCaption = "Cancel", ValidateInputCallback validateInputCallback = null)
         {
             m_validateInputCallback = validateInputCallback;
             InitializeComponent();
@@ -69,11 +61,11 @@ namespace FLangDictionary.UI
                 error = m_validateInputCallback(inputTextBox.Text);
 
             if (error == null)
-                errorLabel.Visibility = Visibility.Collapsed;
+                errorMessage.Visibility = Visibility.Collapsed;
             else
             {
-                errorLabel.Visibility = Visibility.Visible;
-                errorLabel.Content = error;
+                errorMessage.Visibility = Visibility.Visible;
+                errorMessage.Text = error;
             }
 
             okButton.IsEnabled = error == null;

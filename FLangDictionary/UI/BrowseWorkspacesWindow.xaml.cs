@@ -47,11 +47,11 @@ namespace FLangDictionary.UI
             // Создаем диалог, вызываем его и возвращаем результат
             InputBoxWindow newEntityWindow =
                 new InputBoxWindow(
+                    workspaceName,
                     this.Lang("RenameWorkspaceDialog.Title"),
                     this.Lang("RenameWorkspaceDialog.Label"),
-                    this.Lang("RenameWorkspaceDialog.OkCaption"),
-                    this.Lang("RenameWorkspaceDialog.CancelCaption"),
-                    workspaceName,
+                    this.Lang("RenameButtonCaption"),
+                    this.Lang("CancelButtonCaption"),
                     (input) =>
                     {
                         // Проверяем, то что вводит юзер на валидность и что такой рабочей области еще не создано
@@ -76,12 +76,8 @@ namespace FLangDictionary.UI
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            UpdateWorkspacesList();
-        }
-
-        private void OpenButton_Click(object sender, RoutedEventArgs e)
+        // Открывает выбранную пользователем рабочую область
+        private void OpenChosenWorkspace()
         {
             if (ChosenWorkspaceName != null)
             {
@@ -95,6 +91,21 @@ namespace FLangDictionary.UI
                     MessageBox.Show(this.Lang("Error.CannotOpenWorkspace"), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateWorkspacesList();
+        }
+
+        private void workspacesList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            OpenChosenWorkspace();
+        }
+
+        private void OpenButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenChosenWorkspace();
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)

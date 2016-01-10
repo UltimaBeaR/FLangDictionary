@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FLangDictionary.UI"
         mc:Ignorable="d"
-        Title="{DynamicResource Lang.BrowseWorkspacesWindowTitle}" Height="300" Width="300"
+        Title="{DynamicResource Lang.BrowseWorkspaces.WindowTitle}" Height="300" Width="300"
         ResizeMode="NoResize"
         Loaded="Window_Loaded">
     <Grid>
@@ -14,7 +14,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         
-        <ListBox Grid.Column="0" Margin="10,10,10,10" x:Name="workspacesList" />
+        <ListBox Grid.Column="0" Margin="10,10,10,10" x:Name="workspacesList" MouseDoubleClick="workspacesList_MouseDoubleClick" />
             
         <DockPanel Grid.Column="1" Margin="0,10,10,10" LastChildFill="False" MinWidth="80">
             <Button DockPanel.Dock="Top"  Content="{DynamicResource Lang.BrowseWorkspaces.OpenButtonCaption}" Click="OpenButton_Click" />

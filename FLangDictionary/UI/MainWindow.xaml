@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:FLangDictionary.UI"
         mc:Ignorable="d"
         Title="{DynamicResource Lang.MainWindowTitle}" Height="630" Width="745" Background="#FFC9D1D4" MinWidth="300" MinHeight="200"
-        Loaded="Window_Loaded">
+        Loaded="Window_Loaded"
+        Unloaded="Window_Unloaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -19,6 +20,7 @@
                 <MenuItem Header="{DynamicResource Lang.Menu.File.Workspace}">
                     <MenuItem Header="{DynamicResource Lang.Menu.File.Workspace.New}" Click="MenuItem_File_Workspace_New_Click" />
                     <MenuItem Header="{DynamicResource Lang.Menu.File.Workspace.Browse}" Click="MenuItem_File_Workspace_Browse_Click" />
+                    <MenuItem Header="{DynamicResource Lang.Menu.File.Workspace.Close}" Click="MenuItem_File_Workspace_Close_Click" />
                 </MenuItem>
                 <MenuItem Header="{DynamicResource Lang.Menu.File.ShowInFileExplorer}" Click="MenuItem_File_ShowInFileExplorer_Click" />
                 <MenuItem Header="{DynamicResource Lang.Menu.File.Preferences}" Click="MenuItem_File_Preferences_Click" />

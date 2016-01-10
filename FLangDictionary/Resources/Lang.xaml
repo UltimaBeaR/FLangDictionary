@@ -13,6 +13,7 @@
     <v:String x:Key="Lang.Menu.File.Workspace">Workspace</v:String>
     <v:String x:Key="Lang.Menu.File.Workspace.New">New</v:String>
     <v:String x:Key="Lang.Menu.File.Workspace.Browse">Browse</v:String>
+    <v:String x:Key="Lang.Menu.File.Workspace.Close">Close</v:String>
     <v:String x:Key="Lang.Menu.File.ShowInFileExplorer">Show in file explorer</v:String>
     <v:String x:Key="Lang.Menu.File.Preferences">Preferences</v:String>
     <v:String x:Key="Lang.Menu.File.Exit">Exit</v:String>
@@ -32,34 +33,54 @@
     <!--#endregion-->
     
     <!--#region Views-->
-    <v:String x:Key="Lang.TranslationView.OriginalCaption">Original</v:String>
-    <v:String x:Key="Lang.TranslationView.TranslationCaption">Translation</v:String> 
-    <v:String x:Key="Lang.TranslationView.InfinitiveCaption">Infinitive</v:String> 
-    <v:String x:Key="Lang.TranslationView.FromArticleCaption">From article</v:String>
+    <v:String x:Key="Lang.TranslateView.OriginalCaption">Original</v:String>
+    <v:String x:Key="Lang.TranslateView.TranslationCaption">Translation</v:String> 
+    <v:String x:Key="Lang.TranslateView.InfinitiveCaption">Infinitive</v:String> 
+    <v:String x:Key="Lang.TranslateView.FromArticleCaption">From article</v:String>
+    
+    <v:String x:Key="Lang.NoArticlesView.Message">Workspace "{0}" doesn't contain any articles</v:String>
+    <v:String x:Key="Lang.NoArticlesView.CreateArticle">Create article</v:String>
     <!--#endregion-->
     
     <!--#region Secondary dialogs-->
+    <v:String x:Key="Lang.OkButtonCaption">Ok</v:String>
+    <v:String x:Key="Lang.CancelButtonCaption">Cancel</v:String>
+    <v:String x:Key="Lang.CreateButtonCaption">Create</v:String>
+    <v:String x:Key="Lang.RenameButtonCaption">Rename</v:String>
+    
     <v:String x:Key="Lang.NewWorkspaceDialog.Title">New workspace</v:String>
     <v:String x:Key="Lang.NewWorkspaceDialog.NameLabel">Workspace name</v:String>
     <v:String x:Key="Lang.NewWorkspaceDialog.LanguageLabel">Foreign language</v:String>
-    <v:String x:Key="Lang.NewWorkspaceDialog.OkCaption">Create</v:String>
-    <v:String x:Key="Lang.NewWorkspaceDialog.CancelCaption">Cancel</v:String>
     
     <v:String x:Key="Lang.RenameWorkspaceDialog.Title">Rename workspace</v:String>
     <v:String x:Key="Lang.RenameWorkspaceDialog.Label">Workspace name</v:String>
-    <v:String x:Key="Lang.RenameWorkspaceDialog.OkCaption">Rename</v:String>
-    <v:String x:Key="Lang.RenameWorkspaceDialog.CancelCaption">Cancel</v:String>
     
-    <v:String x:Key="Lang.BrowseWorkspacesWindowTitle">Workspaces</v:String>
+    <v:String x:Key="Lang.RenameArticleDialog.Title">Rename article</v:String>
+    <v:String x:Key="Lang.RenameArticleDialog.Label">Article name</v:String>
+    
+    <v:String x:Key="Lang.NewArticleDialog.Title">New article</v:String>
+    <v:String x:Key="Lang.NewArticleDialog.Label">Article name</v:String>
+    
+    <v:String x:Key="Lang.BrowseWorkspaces.WindowTitle">Workspaces</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.OpenButtonCaption">Open</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.DeleteButtonCaption">Delete</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.RenameButtonCaption">Rename</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.AddButtonCaption">Add</v:String>
+    
+    <v:String x:Key="Lang.ManageArticles.WindowTitle">Articles</v:String>
+    <v:String x:Key="Lang.ManageArticles.OpenButtonCaption">Open</v:String>
+    <v:String x:Key="Lang.ManageArticles.DeleteButtonCaption">Delete</v:String>
+    <v:String x:Key="Lang.ManageArticles.RenameButtonCaption">Rename</v:String>
+    <v:String x:Key="Lang.ManageArticles.AddButtonCaption">Add</v:String>
+    <v:String x:Key="Lang.ManageArticles.DownButtonCaption">Move down</v:String>
+    <v:String x:Key="Lang.ManageArticles.UpButtonCaption">Move up</v:String>
     <!--#endregion-->
     
     <!--#region Errors-->
     <v:String x:Key="Lang.Error.IllegalItemName">Illegal item name</v:String>
     <v:String x:Key="Lang.Error.SuchItemAlreadyExists">Such item already exists</v:String>
     <v:String x:Key="Lang.Error.CannotOpenWorkspace">Cannot open workspace</v:String>
+    <v:String x:Key="Lang.Error.Article.IllegalName">Illegal article name</v:String>
+    <v:String x:Key="Lang.Error.Article.AlreadyExists">Article with this name already exists</v:String>
     <!--#endregion-->
 </ResourceDictionary>

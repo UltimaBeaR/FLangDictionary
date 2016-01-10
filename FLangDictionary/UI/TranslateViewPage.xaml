@@ -38,19 +38,19 @@
                         
                     <!--Captions-->
                         
-                    <Label Grid.Row="0" Grid.Column="1" Content="{DynamicResource Lang.TranslationView.OriginalCaption}" />
-                    <Label Grid.Row="0" Grid.Column="2" Content="{DynamicResource Lang.TranslationView.TranslationCaption}" />
-                    <Label Grid.Row="1" Grid.Column="0" Content="{DynamicResource Lang.TranslationView.InfinitiveCaption}" />
-                    <Label Grid.Row="2" Grid.Column="0" Content="{DynamicResource Lang.TranslationView.FromArticleCaption}" />
+                    <Label Grid.Row="0" Grid.Column="1" Content="{DynamicResource Lang.TranslateView.OriginalCaption}" />
+                    <Label Grid.Row="0" Grid.Column="2" Content="{DynamicResource Lang.TranslateView.TranslationCaption}" />
+                    <Label Grid.Row="1" Grid.Column="0" Content="{DynamicResource Lang.TranslateView.InfinitiveCaption}" />
+                    <Label Grid.Row="2" Grid.Column="0" Margin="0, 0, 0, 10" Content="{DynamicResource Lang.TranslateView.FromArticleCaption}" />
                         
                     <!--Original infinitive-->
                     <TextBox Grid.Row="1" Grid.Column="1" x:Name="m_textBoxOriginalInfinitive" Text="original infinitive" />
                     <!--Translated infinitive-->
                     <TextBox Grid.Row="1" Grid.Column="2" x:Name="m_textBoxTranslatedInfinitive" Text="translated infinitive" />
                     <!--Original from article-->
-                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="m_textBoxOriginal" IsReadOnly="True" Text="original" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0, 0, 0, 10" x:Name="m_textBoxOriginal" IsReadOnly="True" Text="original" />
                     <!--Translated from article-->
-                    <TextBox Grid.Row="2" Grid.Column="2" x:Name="m_textBoxTranslated" Text="translated" />
+                    <TextBox Grid.Row="2" Grid.Column="2" Margin="0, 0, 0, 10" x:Name="m_textBoxTranslated" Text="translated" />
                 </Grid>
                     
                 <!--Article-->
@@ -70,7 +70,7 @@
         </Grid>
             
         <!--Splitter between left and right - to resize both parts-->
-        <GridSplitter Grid.Column="1" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+        <GridSplitter Grid.Column="1" Margin="5, 0, 0, 0" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
             
         <!--Right. Dictionary area-->
         <Grid Grid.Column="2">

@@ -44,6 +44,8 @@
                 public const string sequence = "[sequence]";
                 // Текст статьи
                 public const string text = "[text]";
+                // Признак законченности статьи (в режиме когда статья закончена, ее текст больше нельзя менять)
+                public const string finished = "[finished]";
                 // Путь (относительно каталога с юзерскими данными) к файлу с аудио
                 public const string audioFileName = "[audioFileName]";
             }
@@ -61,6 +63,8 @@
                 public const string languageCode = "[languageCode]";
                 // Текст перевода
                 public const string text = "[text]";
+                // Признак законченности перевода (в режиме когда перевод закончен, его текст больше нельзя менять)
+                public const string finished = "[finished]";
             }
 
             // Таблица с еденицами перевода - то есть конкретные слова или фразы в конкретной статье
@@ -116,6 +120,22 @@
             }
         }
 
+        // Помощник для работы с типом bool внутри БД, который там представляется как tinyint
+        private static class TinyIntAsBool
+        {
+            // Строковые значения, для использования в запросах
+            public const string trueStr = "1";
+            public const string falseStr = "0";
+
+            // Преобразование из bool в str, для использования в теле запроса
+            public static string StrFromBool(bool val) =>
+                val ? trueStr : falseStr;
+
+            // Преобразование из short в bool, используется при чтении результата запроса как short
+            public static bool BoolFromShort(short val) =>
+                val != 0;
+        }
+
         // Содержим значения ключей для таблицы WorkspaceProperties
         private static class WorkspacePropertyKeys
         {
@@ -151,6 +171,7 @@
                 $"{Tables.Articles.name} nchar(60) NOT NULL, " +
                 $"{Tables.Articles.sequence} integer NOT NULL, " +
                 $"{Tables.Articles.text} nvarchar NOT NULL, " +
+                $"{Tables.Articles.finished} tinyint NOT NULL, " +
                 $"{Tables.Articles.audioFileName} nchar(256)" +
                 $");");
 
@@ -160,7 +181,8 @@
                 $"[Id] integer PRIMARY KEY AUTOINCREMENT, " +
                 $"{Tables.ArtisticalTranslations.articleId} integer NOT NULL, " +
                 $"{Tables.ArtisticalTranslations.languageCode} nchar(20) NOT NULL, " +
-                $"{Tables.ArtisticalTranslations.text} nvarchar NOT NULL" +
+                $"{Tables.ArtisticalTranslations.text} nvarchar NOT NULL, " +
+                $"{Tables.ArtisticalTranslations.finished} tinyint NOT NULL" +
                 $");");
 
             ExecuteSQLQuery(

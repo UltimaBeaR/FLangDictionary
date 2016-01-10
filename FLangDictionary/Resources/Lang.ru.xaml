@@ -13,6 +13,7 @@
     <v:String x:Key="Lang.Menu.File.Workspace">Рабочая область</v:String>
     <v:String x:Key="Lang.Menu.File.Workspace.New">Новая</v:String>
     <v:String x:Key="Lang.Menu.File.Workspace.Browse">Обзор</v:String>
+    <v:String x:Key="Lang.Menu.File.Workspace.Close">Закрыть</v:String>
     <v:String x:Key="Lang.Menu.File.ShowInFileExplorer">Показать в проводнике</v:String>
     <v:String x:Key="Lang.Menu.File.Preferences">Настройки</v:String>
     <v:String x:Key="Lang.Menu.File.Exit">Выход</v:String>
@@ -32,34 +33,54 @@
     <!--#endregion-->
     
     <!--#region Views-->
-    <v:String x:Key="Lang.TranslationView.OriginalCaption">Оригинал</v:String>
-    <v:String x:Key="Lang.TranslationView.TranslationCaption">Перевод</v:String> 
-    <v:String x:Key="Lang.TranslationView.InfinitiveCaption">Инфинитив</v:String> 
-    <v:String x:Key="Lang.TranslationView.FromArticleCaption">Из статьи</v:String>
+    <v:String x:Key="Lang.TranslateView.OriginalCaption">Оригинал</v:String>
+    <v:String x:Key="Lang.TranslateView.TranslationCaption">Перевод</v:String> 
+    <v:String x:Key="Lang.TranslateView.InfinitiveCaption">Инфинитив</v:String> 
+    <v:String x:Key="Lang.TranslateView.FromArticleCaption">Из статьи</v:String>
+    
+    <v:String x:Key="Lang.NoArticlesView.Message">Рабочая область "{0}" не содержит статей</v:String>
+    <v:String x:Key="Lang.NoArticlesView.CreateArticle">Создать статью</v:String>
     <!--#endregion-->
     
     <!--#region Secondary dialogs-->
+    <v:String x:Key="Lang.OkButtonCaption">Ок</v:String>
+    <v:String x:Key="Lang.CancelButtonCaption">Отмена</v:String>
+    <v:String x:Key="Lang.CreateButtonCaption">Создать</v:String>
+    <v:String x:Key="Lang.RenameButtonCaption">Переименовать</v:String>
+    
     <v:String x:Key="Lang.NewWorkspaceDialog.Title">Новая рабочая область</v:String>
     <v:String x:Key="Lang.NewWorkspaceDialog.NameLabel">Название рабочей области</v:String>
     <v:String x:Key="Lang.NewWorkspaceDialog.LanguageLabel">Иностранный язык</v:String>
-    <v:String x:Key="Lang.NewWorkspaceDialog.OkCaption">Создать</v:String>
-    <v:String x:Key="Lang.NewWorkspaceDialog.CancelCaption">Отмена</v:String>
     
     <v:String x:Key="Lang.RenameWorkspaceDialog.Title">Переименовать</v:String>
     <v:String x:Key="Lang.RenameWorkspaceDialog.Label">Название рабочей области</v:String>
-    <v:String x:Key="Lang.RenameWorkspaceDialog.OkCaption">Переименовать</v:String>
-    <v:String x:Key="Lang.RenameWorkspaceDialog.CancelCaption">Отмена</v:String>
     
-    <v:String x:Key="Lang.BrowseWorkspacesWindowTitle">Рабочие области</v:String>
+    <v:String x:Key="Lang.RenameArticleDialog.Title">Переименовать</v:String>
+    <v:String x:Key="Lang.RenameArticleDialog.Label">Название статьи</v:String>
+    
+    <v:String x:Key="Lang.NewArticleDialog.Title">Новая статья</v:String>
+    <v:String x:Key="Lang.NewArticleDialog.Label">Название статьи</v:String>
+    
+    <v:String x:Key="Lang.BrowseWorkspaces.WindowTitle">Рабочие области</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.OpenButtonCaption">Открыть</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.DeleteButtonCaption">Удалить</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.RenameButtonCaption">Переименовать</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.AddButtonCaption">Добавить</v:String>
+    
+    <v:String x:Key="Lang.ManageArticles.WindowTitle">Статьи</v:String>
+    <v:String x:Key="Lang.ManageArticles.OpenButtonCaption">Открыть</v:String>
+    <v:String x:Key="Lang.ManageArticles.DeleteButtonCaption">Удалить</v:String>
+    <v:String x:Key="Lang.ManageArticles.RenameButtonCaption">Переименовать</v:String>
+    <v:String x:Key="Lang.ManageArticles.AddButtonCaption">Добавить</v:String>
+    <v:String x:Key="Lang.ManageArticles.DownButtonCaption">Сдвинуть вниз</v:String>
+    <v:String x:Key="Lang.ManageArticles.UpButtonCaption">Сдвинуть вверх</v:String>
     <!--#endregion-->
     
     <!--#region Errors-->
     <v:String x:Key="Lang.Error.IllegalItemName">Недопустимое имя элемента</v:String>
     <v:String x:Key="Lang.Error.SuchItemAlreadyExists">Такой элемент уже существует</v:String>
     <v:String x:Key="Lang.Error.CannotOpenWorkspace">Невозможно открыть рабочую область</v:String>
+    <v:String x:Key="Lang.Error.Article.IllegalName">Недопустимое имя статьи</v:String>
+    <v:String x:Key="Lang.Error.Article.AlreadyExists">Статья с таким именем уже существует</v:String>
     <!--#endregion-->
 </ResourceDictionary>

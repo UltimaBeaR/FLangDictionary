@@ -126,7 +126,7 @@ namespace FLangDictionary.UI
 
         void SetText(string language, string text)
         {
-            m_textInLang = new Logic.Article.TextInLanguage(language, text);
+            m_textInLang = new Logic.Article.TextInLanguage(language, text, true);
 
             m_articleParagraph.Inlines.Clear();
             m_articleParagraph.Inlines.Add(text);
@@ -134,9 +134,6 @@ namespace FLangDictionary.UI
 
         private void test_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var ss in Global.CurrentWorkspace.ArticleNames)
-                MessageBox.Show(ss);
-
             var openFileDialog = new System.Windows.Forms.FolderBrowserDialog();
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 m_dict = new StarDict.StarDict(openFileDialog.SelectedPath);

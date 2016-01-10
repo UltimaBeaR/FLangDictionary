@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace FLangDictionary.Data
 {
@@ -99,7 +100,7 @@ namespace FLangDictionary.Data
         {
             string res = null;
             ExecuteSQLQuery(
-                $"SELECT {Tables.WorkspaceProperties.value} FROM {Tables.workspaceProperties}",
+                $"SELECT {Tables.WorkspaceProperties.value} FROM {Tables.workspaceProperties};",
                 (reader) =>
                 {
                     if (reader.HasRows)
@@ -125,7 +126,7 @@ namespace FLangDictionary.Data
 
             ExecuteSQLQuery(
                 $"SELECT {Tables.Articles.name} FROM {Tables.articles} " +
-                $"ORDER BY {Tables.Articles.sequence}",
+                $"ORDER BY {Tables.Articles.sequence};",
                 (reader) =>
                 {
                     if (reader.HasRows)
@@ -138,6 +139,42 @@ namespace FLangDictionary.Data
                 });
 
             return articleNames.ToArray();
+        }
+
+        // Из заданной строки получает литерал SQL-строки в кавычках. При этом следит за тем, чтобы
+        // не было проблем с экранированием
+        // Например, если была подана строка abc'de, то выдаст строку 'abc''de'
+        private string SQLStringLiteral(string sourceString)
+        {
+            StringBuilder stringBuilder = new StringBuilder(sourceString);
+
+            // Заменяем ковычки на двойные, чтобы не было выхода за экран
+            stringBuilder.Replace("'", "''");
+
+            // Добавляем кавычки с обих сторон
+            stringBuilder.Insert(0, "'");
+            stringBuilder.Append("'");
+
+            return stringBuilder.ToString();
+        }
+
+        // Добавляет новую пустую статью с заданным именем
+        public void AddArticle(string articleName)
+        {
+            int sequence = 0;
+            // Сначала получим количество записей - это нужно чтобы узнать следующий sequence(порядковый номер) для этой статьи
+            ExecuteSQLQuery($"SELECT Count(*) FROM {Tables.articles};", (reader) => { reader.Read(); sequence = reader.GetInt32(0) - 1; });
+
+            // Теперь добавим пустую статью с заданным именем и полученным порядковым номером
+            ExecuteSQLQuery($"INSERT INTO {Tables.articles} VALUES " +
+                $"(" +
+                $"NULL, " + //< Id (Автоинкремент)
+                $"{SQLStringLiteral(articleName)}, " + // name - Имя статьи
+                $"{sequence}, " + //< sequence - порядковый номер
+                $"'', " + //< text - текст статьи
+                $"{TinyIntAsBool.falseStr}, " + //< finished - флаг завершенности статьи
+                $"NULL" + //< audioFileName - имя файла с аудиозаписью
+                $");");
         }
     }
 }

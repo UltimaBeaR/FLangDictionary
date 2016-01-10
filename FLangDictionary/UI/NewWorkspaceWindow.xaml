@@ -31,7 +31,7 @@
             <ComboBox x:Name="languageList" Width="200" />
         </StackPanel>
         
-        <Button Grid.Row="2" Grid.Column="0" Height="20" HorizontalAlignment="Center" MinWidth="75" Content="{DynamicResource Lang.NewWorkspaceDialog.OkCaption}" x:Name="okButton" Click="okButton_Click" />
-        <Button Grid.Row="2" Grid.Column="1" Height="20" HorizontalAlignment="Center" MinWidth="75" Content="{DynamicResource Lang.NewWorkspaceDialog.CancelCaption}" Click="cancelButton_Click" />
+        <Button Grid.Row="2" Grid.Column="0" Height="20" HorizontalAlignment="Center" MinWidth="75" Content="{DynamicResource Lang.CreateButtonCaption}" x:Name="okButton" Click="okButton_Click" />
+        <Button Grid.Row="2" Grid.Column="1" Height="20" HorizontalAlignment="Center" MinWidth="75" Content="{DynamicResource Lang.CancelButtonCaption}" Click="cancelButton_Click" />
     </Grid>
 </Window>

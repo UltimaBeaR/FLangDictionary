@@ -1,0 +1,29 @@
+﻿<Window x:Class="FLangDictionary.UI.ManageArticlesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FLangDictionary.UI"
+        mc:Ignorable="d"
+        Title="{DynamicResource Lang.ManageArticles.WindowTitle}" Height="300" Width="300"
+        ResizeMode="NoResize"
+        Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        <ListBox Grid.Column="0" Margin="10,10,10,10" x:Name="articlesList" MouseDoubleClick="articlesList_MouseDoubleClick" />
+            
+        <DockPanel Grid.Column="1" Margin="0,10,10,10" LastChildFill="False" MinWidth="80">
+            <Button DockPanel.Dock="Top"  Content="{DynamicResource Lang.ManageArticles.OpenButtonCaption}" Click="OpenButton_Click" />
+            
+            <Button DockPanel.Dock="Bottom" Content="{DynamicResource Lang.ManageArticles.DeleteButtonCaption}" Click="DeleteButton_Click" />
+            <Button DockPanel.Dock="Bottom" Content="{DynamicResource Lang.ManageArticles.RenameButtonCaption}" Margin="0,0,0,10" Click="RenameButton_Click" />
+            <Button DockPanel.Dock="Bottom" Content="{DynamicResource Lang.ManageArticles.AddButtonCaption}" Margin="0,0,0,10" Click="AddButton_Click" />
+            <Button DockPanel.Dock="Bottom" Content="{DynamicResource Lang.ManageArticles.DownButtonCaption}" Margin="0,0,0,10" Click="DownButton_Click" />
+            <Button DockPanel.Dock="Bottom" Content="{DynamicResource Lang.ManageArticles.UpButtonCaption}" Margin="0,0,0,10" Click="UpButton_Click" />
+        </DockPanel>
+    </Grid>
+</Window>

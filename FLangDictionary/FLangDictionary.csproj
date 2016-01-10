@@ -105,8 +105,20 @@
     <Compile Include="StarDict\IdxFile.cs" />
     <Compile Include="StarDict\IfoFile.cs" />
     <Compile Include="StarDict\StarDict.cs" />
+    <Compile Include="UI\InputComboBoxWindow.xaml.cs">
+      <DependentUpon>InputComboBoxWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\LearnViewPage.xaml.cs">
+      <DependentUpon>LearnViewPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ManageArticlesWindow.xaml.cs">
+      <DependentUpon>ManageArticlesWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\NewWorkspaceWindow.xaml.cs">
       <DependentUpon>NewWorkspaceWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\NoArticlesViewPage.xaml.cs">
+      <DependentUpon>NoArticlesViewPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\StarDictFlowDocumentBuilder.cs" />
     <Compile Include="UI\InputBoxWindow.xaml.cs">
@@ -128,6 +140,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\BrowseWorkspacesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\InputComboBoxWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\LearnViewPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ManageArticlesWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -153,6 +177,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\InputBoxWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\NoArticlesViewPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

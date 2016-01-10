@@ -57,6 +57,27 @@ namespace FLangDictionary.Data
             InitialUpdate();
         }
 
+        // Добавляет новую статью
+        public void AddNewArticle(string articleName)
+        {
+            // Заданная статья не должна существовать
+            Debug.Assert(articleName != null && !m_articleNames.Contains(articleName));
+
+            // Добавляем статью
+            m_repository.AddArticle(articleName);
+
+            // Обновим список статей, так как добавилась новая статья
+            UpdateArticleNames();
+        }
+
+        // Открывает заданную по имени статью, то есть делает ее текущей (при этом происходит полная ее загрузка из бд, парсинг на синтаксическую разметку и так далее)
+        // Если при этом какая-то статья была открыта, она закроется
+        public void OpenArticle(string articleName)
+        {
+            // Заданная статья должна существовать
+            Debug.Assert(articleName != null && m_articleNames.Contains(articleName));
+        }
+
         // Обновление кэша, которое происходит сразу после создания объекта этого класса
         private void InitialUpdate()
         {
