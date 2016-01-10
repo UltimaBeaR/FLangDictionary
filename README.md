@@ -1,0 +1,2 @@
+# FLangDictionary
+Foreign language dictionary
