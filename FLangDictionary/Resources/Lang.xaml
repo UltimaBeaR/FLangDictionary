@@ -1,0 +1,50 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:FLangDictionary"
+                    xmlns:v="clr-namespace:System;assembly=mscorlib">
+    <v:String x:Key="Lang.MainWindowTitle">Foreign Language Dictionary</v:String>
+    <v:String x:Key="Lang.PreferencesTitle">Preferences</v:String>
+    <v:String x:Key="Lang.UILanguageLabel">User Interface language</v:String>
+    <v:String x:Key="Lang.FileMenuHeader">File</v:String>
+    <v:String x:Key="Lang.File.WorkspaceMenuHeader">Workspace</v:String>
+    <v:String x:Key="Lang.File.Workspace.NewMenuHeader">New</v:String>
+    <v:String x:Key="Lang.File.Workspace.BrowseMenuHeader">Browse</v:String>
+    <v:String x:Key="Lang.File.ShowInFileExplorerMenuHeader">Show in file explorer</v:String>
+    <v:String x:Key="Lang.File.PreferencesMenuHeader">Preferences</v:String>
+    <v:String x:Key="Lang.File.CloseApplicationMenuHeader">Exit</v:String>
+    <v:String x:Key="Lang.ArticleMenuHeader">Article</v:String>
+    <v:String x:Key="Lang.Article.NewMenuHeader">New</v:String>
+    <v:String x:Key="Lang.Article.NewTranslationMenuHeader">New artistical translaton</v:String>
+    <v:String x:Key="Lang.Article.BrowseMenuHeader">Browse</v:String>
+    <v:String x:Key="Lang.ViewMenuHeader">View</v:String>
+    <v:String x:Key="Lang.View.TranslateMenuHeader">Translate</v:String>
+    <v:String x:Key="Lang.View.AssociateMenuHeader">Associate</v:String>
+    <v:String x:Key="Lang.View.LearnMenuHeader">Learn</v:String>
+    <v:String x:Key="Lang.Help.HelpMenuHeader">Help</v:String>
+    <v:String x:Key="Lang.Help.AboutMenuHeader">About</v:String> 
+    <v:String x:Key="Lang.TranslationView.OriginalCaption">Original</v:String>
+    <v:String x:Key="Lang.TranslationView.TranslationCaption">Translation</v:String> 
+    <v:String x:Key="Lang.TranslationView.InfinitiveCaption">Infinitive</v:String> 
+    <v:String x:Key="Lang.TranslationView.FromArticleCaption">From article</v:String>
+    
+    <v:String x:Key="Lang.NewWorkspaceDialog.Title">New workspace</v:String>
+    <v:String x:Key="Lang.NewWorkspaceDialog.NameLabel">Workspace name</v:String>
+    <v:String x:Key="Lang.NewWorkspaceDialog.LanguageLabel">Foreign language</v:String>
+    <v:String x:Key="Lang.NewWorkspaceDialog.OkCaption">Create</v:String>
+    <v:String x:Key="Lang.NewWorkspaceDialog.CancelCaption">Cancel</v:String>
+    
+    <v:String x:Key="Lang.RenameWorkspaceDialog.Title">Rename workspace</v:String>
+    <v:String x:Key="Lang.RenameWorkspaceDialog.Label">Workspace name</v:String>
+    <v:String x:Key="Lang.RenameWorkspaceDialog.OkCaption">Rename</v:String>
+    <v:String x:Key="Lang.RenameWorkspaceDialog.CancelCaption">Cancel</v:String>
+    
+    <v:String x:Key="Lang.Error.IllegalItemName">Illegal item name</v:String>
+    <v:String x:Key="Lang.Error.SuchItemAlreadyExists">Such item already exists</v:String>
+    <v:String x:Key="Lang.Error.CannotOpenWorkspace">Cannot open workspace</v:String>
+    
+    <v:String x:Key="Lang.BrowseWorkspacesWindowTitle">Workspaces</v:String>
+    <v:String x:Key="Lang.BrowseWorkspaces.OpenButtonCaption">Open</v:String>
+    <v:String x:Key="Lang.BrowseWorkspaces.DeleteButtonCaption">Delete</v:String>
+    <v:String x:Key="Lang.BrowseWorkspaces.RenameButtonCaption">Rename</v:String>
+    <v:String x:Key="Lang.BrowseWorkspaces.AddButtonCaption">Add</v:String>
+</ResourceDictionary>

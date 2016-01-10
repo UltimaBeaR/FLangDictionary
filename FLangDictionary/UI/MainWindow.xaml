@@ -1,0 +1,46 @@
+﻿<Window x:Class="FLangDictionary.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FLangDictionary.UI"
+        mc:Ignorable="d"
+        Title="{DynamicResource Lang.MainWindowTitle}" Height="630" Width="745" Background="#FFC9D1D4" MinWidth="300" MinHeight="200"
+        Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <!--Menu-->
+        <Menu Grid.Row="0" DockPanel.Dock="Top">
+            <MenuItem Header="{DynamicResource Lang.FileMenuHeader}">
+                <MenuItem Header="{DynamicResource Lang.File.WorkspaceMenuHeader}">
+                    <MenuItem Header="{DynamicResource Lang.File.Workspace.NewMenuHeader}" Click="MenuItem_File_Workspace_New_Click" />
+                    <MenuItem Header="{DynamicResource Lang.File.Workspace.BrowseMenuHeader}" Click="MenuItem_File_Workspace_Browse_Click" />
+                </MenuItem>
+                <MenuItem Header="{DynamicResource Lang.File.ShowInFileExplorerMenuHeader}" Click="MenuItem_File_ShowInFileExplorer_Click" />
+                <MenuItem Header="{DynamicResource Lang.File.PreferencesMenuHeader}" Click="MenuItem_File_Preferences_Click" />
+                <Separator />
+                <MenuItem Header="{DynamicResource Lang.File.CloseApplicationMenuHeader}" Click="MenuItem_File_CloseApplication_Click" />
+            </MenuItem>
+            <MenuItem Header="{DynamicResource Lang.ArticleMenuHeader}">
+                <MenuItem Header="{DynamicResource Lang.Article.NewMenuHeader}" Click="MenuItem_Article_New_Click" />
+                <MenuItem Header="{DynamicResource Lang.Article.NewTranslationMenuHeader}" Click="MenuItem_Article_NewTranslation_Click" />
+                <MenuItem Header="{DynamicResource Lang.Article.BrowseMenuHeader}" Click="MenuItem_Article_Browse_Click" />
+            </MenuItem>
+            <MenuItem Header="{DynamicResource Lang.ViewMenuHeader}">
+                <MenuItem Header="{DynamicResource Lang.View.TranslateMenuHeader}" Click="MenuItem_View_Translate_Click" />
+                <MenuItem Header="{DynamicResource Lang.View.AssociateMenuHeader}" Click="MenuItem_View_Associate_Click" />
+                <MenuItem Header="{DynamicResource Lang.View.LearnMenuHeader}" Click="MenuItem_View_Learn_Click" />
+            </MenuItem>
+            <MenuItem Header="{DynamicResource Lang.Help.HelpMenuHeader}">
+                <MenuItem Header="{DynamicResource Lang.Help.AboutMenuHeader}" Click="MenuItem_Help_About_Click" />
+            </MenuItem>
+        </Menu>
+        
+        <!--Content-->
+        <Frame Grid.Row="1" x:Name="contentViewFrame" Margin="5,5,5,0" NavigationUIVisibility="Hidden" />
+    </Grid>
+</Window>

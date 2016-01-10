@@ -1,0 +1,27 @@
+﻿<Window x:Class="FLangDictionary.UI.BrowseWorkspacesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FLangDictionary.UI"
+        mc:Ignorable="d"
+        Title="{DynamicResource Lang.BrowseWorkspacesWindowTitle}" Height="300" Width="300"
+        ResizeMode="NoResize"
+        Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        <ListBox Grid.Column="0" Margin="10,10,10,10" x:Name="workspacesList" />
+            
+        <DockPanel Grid.Column="1" Margin="0,10,10,10" LastChildFill="False" MinWidth="80">
+            <Button DockPanel.Dock="Top"  Content="{DynamicResource Lang.BrowseWorkspaces.OpenButtonCaption}" Click="OpenButton_Click" />
+            
+            <Button DockPanel.Dock="Bottom" Content="{DynamicResource Lang.BrowseWorkspaces.DeleteButtonCaption}" Click="DeleteButton_Click" />
+            <Button DockPanel.Dock="Bottom" Content="{DynamicResource Lang.BrowseWorkspaces.RenameButtonCaption}" Margin="0,0,0,10" Click="RenameButton_Click" />
+            <Button DockPanel.Dock="Bottom" Content="{DynamicResource Lang.BrowseWorkspaces.AddButtonCaption}" Margin="0,0,0,10" Click="AddButton_Click" />
+        </DockPanel>
+    </Grid>
+</Window>
