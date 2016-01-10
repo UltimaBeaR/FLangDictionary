@@ -15,28 +15,29 @@
         
         <!--Menu-->
         <Menu Grid.Row="0" DockPanel.Dock="Top">
-            <MenuItem Header="{DynamicResource Lang.FileMenuHeader}">
-                <MenuItem Header="{DynamicResource Lang.File.WorkspaceMenuHeader}">
-                    <MenuItem Header="{DynamicResource Lang.File.Workspace.NewMenuHeader}" Click="MenuItem_File_Workspace_New_Click" />
-                    <MenuItem Header="{DynamicResource Lang.File.Workspace.BrowseMenuHeader}" Click="MenuItem_File_Workspace_Browse_Click" />
+            <MenuItem Header="{DynamicResource Lang.Menu.File}">
+                <MenuItem Header="{DynamicResource Lang.Menu.File.Workspace}">
+                    <MenuItem Header="{DynamicResource Lang.Menu.File.Workspace.New}" Click="MenuItem_File_Workspace_New_Click" />
+                    <MenuItem Header="{DynamicResource Lang.Menu.File.Workspace.Browse}" Click="MenuItem_File_Workspace_Browse_Click" />
                 </MenuItem>
-                <MenuItem Header="{DynamicResource Lang.File.ShowInFileExplorerMenuHeader}" Click="MenuItem_File_ShowInFileExplorer_Click" />
-                <MenuItem Header="{DynamicResource Lang.File.PreferencesMenuHeader}" Click="MenuItem_File_Preferences_Click" />
+                <MenuItem Header="{DynamicResource Lang.Menu.File.ShowInFileExplorer}" Click="MenuItem_File_ShowInFileExplorer_Click" />
+                <MenuItem Header="{DynamicResource Lang.Menu.File.Preferences}" Click="MenuItem_File_Preferences_Click" />
                 <Separator />
-                <MenuItem Header="{DynamicResource Lang.File.CloseApplicationMenuHeader}" Click="MenuItem_File_CloseApplication_Click" />
+                <MenuItem Header="{DynamicResource Lang.Menu.File.Exit}" Click="MenuItem_File_Exit_Click" />
             </MenuItem>
-            <MenuItem Header="{DynamicResource Lang.ArticleMenuHeader}">
-                <MenuItem Header="{DynamicResource Lang.Article.NewMenuHeader}" Click="MenuItem_Article_New_Click" />
-                <MenuItem Header="{DynamicResource Lang.Article.NewTranslationMenuHeader}" Click="MenuItem_Article_NewTranslation_Click" />
-                <MenuItem Header="{DynamicResource Lang.Article.BrowseMenuHeader}" Click="MenuItem_Article_Browse_Click" />
+            <MenuItem Header="{DynamicResource Lang.Menu.Article}">
+                <MenuItem Header="{DynamicResource Lang.Menu.Article.New}" Click="MenuItem_Article_New_Click" />
+                <MenuItem Header="{DynamicResource Lang.Menu.Article.Manage}" Click="MenuItem_Article_Manage_Click" />
+                <Separator />
+                <MenuItem Header="{DynamicResource Lang.Menu.Article.ManageLanguages}" Click="MenuItem_Article_ManageLanguages_Click" />
             </MenuItem>
-            <MenuItem Header="{DynamicResource Lang.ViewMenuHeader}">
-                <MenuItem Header="{DynamicResource Lang.View.TranslateMenuHeader}" Click="MenuItem_View_Translate_Click" />
-                <MenuItem Header="{DynamicResource Lang.View.AssociateMenuHeader}" Click="MenuItem_View_Associate_Click" />
-                <MenuItem Header="{DynamicResource Lang.View.LearnMenuHeader}" Click="MenuItem_View_Learn_Click" />
+            <MenuItem Header="{DynamicResource Lang.Menu.View}">
+                <MenuItem Header="{DynamicResource Lang.Menu.View.Edit}" Click="MenuItem_View_Edit_Click" />
+                <MenuItem Header="{DynamicResource Lang.Menu.View.Translate}" Click="MenuItem_View_Translate_Click" />
+                <MenuItem Header="{DynamicResource Lang.Menu.View.Learn}" Click="MenuItem_View_Learn_Click" />
             </MenuItem>
-            <MenuItem Header="{DynamicResource Lang.Help.HelpMenuHeader}">
-                <MenuItem Header="{DynamicResource Lang.Help.AboutMenuHeader}" Click="MenuItem_Help_About_Click" />
+            <MenuItem Header="{DynamicResource Lang.Menu.Help}">
+                <MenuItem Header="{DynamicResource Lang.Menu.Help.About}" Click="MenuItem_Help_About_Click" />
             </MenuItem>
         </Menu>
         

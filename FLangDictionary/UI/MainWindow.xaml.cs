@@ -19,8 +19,8 @@ namespace FLangDictionary.UI
         private enum ViewMode
         {
             None,
+            Edit,
             Translate,
-            Associate,
             Learn
         }
 
@@ -28,9 +28,9 @@ namespace FLangDictionary.UI
         {
             switch (viewMode)
             {
-                case ViewMode.Translate: contentViewFrame.Source = new Uri("TranslationViewPage.xaml", UriKind.Relative); break;
-                case ViewMode.Associate: contentViewFrame.Source = new Uri("AssociationViewPage.xaml", UriKind.Relative); break;
-                case ViewMode.Learn: contentViewFrame.Source = new Uri("LearningViewPage.xaml", UriKind.Relative); break;
+                case ViewMode.Translate: contentViewFrame.Source = new Uri("TranslateViewPage.xaml", UriKind.Relative); break;
+                case ViewMode.Edit: contentViewFrame.Source = new Uri("EditViewPage.xaml", UriKind.Relative); break;
+                case ViewMode.Learn: contentViewFrame.Source = new Uri("LearnViewPage.xaml", UriKind.Relative); break;
                 default: contentViewFrame.Source = null; break;
             }
         }
@@ -100,7 +100,7 @@ namespace FLangDictionary.UI
             preferences.ShowDialog();
         }
 
-        private void MenuItem_File_CloseApplication_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_File_Exit_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
@@ -109,22 +109,22 @@ namespace FLangDictionary.UI
         {
         }
 
-        private void MenuItem_Article_NewTranslation_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_Article_Manage_Click(object sender, RoutedEventArgs e)
         {
         }
 
-        private void MenuItem_Article_Browse_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_Article_ManageLanguages_Click(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void MenuItem_View_Edit_Click(object sender, RoutedEventArgs e)
+        {
+            SetViewMode(ViewMode.None);
         }
 
         private void MenuItem_View_Translate_Click(object sender, RoutedEventArgs e)
         {
             SetViewMode(ViewMode.Translate);
-        }
-
-        private void MenuItem_View_Associate_Click(object sender, RoutedEventArgs e)
-        {
-            SetViewMode(ViewMode.None);
         }
 
         private void MenuItem_View_Learn_Click(object sender, RoutedEventArgs e)

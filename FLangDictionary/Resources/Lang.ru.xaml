@@ -2,31 +2,43 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:FLangDictionary"
                     xmlns:v="clr-namespace:System;assembly=mscorlib">
+    <!--#region Global-->
     <v:String x:Key="Lang.MainWindowTitle">Словарь иностранного языка</v:String>
     <v:String x:Key="Lang.PreferencesTitle">Настройки</v:String>
     <v:String x:Key="Lang.UILanguageLabel">Язык пользовательского интерфейса</v:String>
-    <v:String x:Key="Lang.FileMenuHeader">Файл</v:String>
-    <v:String x:Key="Lang.File.WorkspaceMenuHeader">Рабочая область</v:String>
-    <v:String x:Key="Lang.File.Workspace.NewMenuHeader">Новая</v:String>
-    <v:String x:Key="Lang.File.Workspace.BrowseMenuHeader">Обзор</v:String>
-    <v:String x:Key="Lang.File.ShowInFileExplorerMenuHeader">Показать в проводнике</v:String>
-    <v:String x:Key="Lang.File.PreferencesMenuHeader">Настройки</v:String>
-    <v:String x:Key="Lang.File.CloseApplicationMenuHeader">Выход</v:String>
-    <v:String x:Key="Lang.ArticleMenuHeader">Статья</v:String>
-    <v:String x:Key="Lang.Article.NewMenuHeader">Новая</v:String>
-    <v:String x:Key="Lang.Article.NewTranslationMenuHeader">Новый художественный перевод</v:String>
-    <v:String x:Key="Lang.Article.BrowseMenuHeader">Обзор</v:String>
-    <v:String x:Key="Lang.ViewMenuHeader">Вид</v:String>
-    <v:String x:Key="Lang.View.TranslateMenuHeader">Переводить</v:String>
-    <v:String x:Key="Lang.View.AssociateMenuHeader">Ассоциировать</v:String>
-    <v:String x:Key="Lang.View.LearnMenuHeader">Учить</v:String>
-    <v:String x:Key="Lang.Help.HelpMenuHeader">Помощь</v:String>
-    <v:String x:Key="Lang.Help.AboutMenuHeader">О программе</v:String> 
+    <!--#endregion-->
+    
+    <!--#region Menu headers-->
+    <v:String x:Key="Lang.Menu.File">Файл</v:String>
+    <v:String x:Key="Lang.Menu.File.Workspace">Рабочая область</v:String>
+    <v:String x:Key="Lang.Menu.File.Workspace.New">Новая</v:String>
+    <v:String x:Key="Lang.Menu.File.Workspace.Browse">Обзор</v:String>
+    <v:String x:Key="Lang.Menu.File.ShowInFileExplorer">Показать в проводнике</v:String>
+    <v:String x:Key="Lang.Menu.File.Preferences">Настройки</v:String>
+    <v:String x:Key="Lang.Menu.File.Exit">Выход</v:String>
+    
+    <v:String x:Key="Lang.Menu.Article">Статья</v:String>
+    <v:String x:Key="Lang.Menu.Article.New">Новая</v:String>
+    <v:String x:Key="Lang.Menu.Article.Manage">Список</v:String>
+    <v:String x:Key="Lang.Menu.Article.ManageLanguages">Список языков</v:String>
+    
+    <v:String x:Key="Lang.Menu.View">Вид</v:String>
+    <v:String x:Key="Lang.Menu.View.Edit">Редактировать и ассоциировать</v:String>
+    <v:String x:Key="Lang.Menu.View.Translate">Переводить</v:String>
+    <v:String x:Key="Lang.Menu.View.Learn">Учить</v:String>
+    
+    <v:String x:Key="Lang.Menu.Help">Помощь</v:String>
+    <v:String x:Key="Lang.Menu.Help.About">О программе</v:String>
+    <!--#endregion-->
+    
+    <!--#region Views-->
     <v:String x:Key="Lang.TranslationView.OriginalCaption">Оригинал</v:String>
     <v:String x:Key="Lang.TranslationView.TranslationCaption">Перевод</v:String> 
     <v:String x:Key="Lang.TranslationView.InfinitiveCaption">Инфинитив</v:String> 
     <v:String x:Key="Lang.TranslationView.FromArticleCaption">Из статьи</v:String>
+    <!--#endregion-->
     
+    <!--#region Secondary dialogs-->
     <v:String x:Key="Lang.NewWorkspaceDialog.Title">Новая рабочая область</v:String>
     <v:String x:Key="Lang.NewWorkspaceDialog.NameLabel">Название рабочей области</v:String>
     <v:String x:Key="Lang.NewWorkspaceDialog.LanguageLabel">Иностранный язык</v:String>
@@ -38,13 +50,16 @@
     <v:String x:Key="Lang.RenameWorkspaceDialog.OkCaption">Переименовать</v:String>
     <v:String x:Key="Lang.RenameWorkspaceDialog.CancelCaption">Отмена</v:String>
     
-    <v:String x:Key="Lang.Error.IllegalItemName">Недопустимое имя элемента</v:String>
-    <v:String x:Key="Lang.Error.SuchItemAlreadyExists">Такой элемент уже существует</v:String>
-    <v:String x:Key="Lang.Error.CannotOpenWorkspace">Невозможно открыть рабочую область</v:String>
-    
     <v:String x:Key="Lang.BrowseWorkspacesWindowTitle">Рабочие области</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.OpenButtonCaption">Открыть</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.DeleteButtonCaption">Удалить</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.RenameButtonCaption">Переименовать</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.AddButtonCaption">Добавить</v:String>
+    <!--#endregion-->
+    
+    <!--#region Errors-->
+    <v:String x:Key="Lang.Error.IllegalItemName">Недопустимое имя элемента</v:String>
+    <v:String x:Key="Lang.Error.SuchItemAlreadyExists">Такой элемент уже существует</v:String>
+    <v:String x:Key="Lang.Error.CannotOpenWorkspace">Невозможно открыть рабочую область</v:String>
+    <!--#endregion-->
 </ResourceDictionary>

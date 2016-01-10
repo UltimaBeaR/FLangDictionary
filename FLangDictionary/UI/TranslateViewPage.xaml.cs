@@ -17,9 +17,9 @@ using System.Windows.Shapes;
 namespace FLangDictionary.UI
 {
     /// <summary>
-    /// Логика взаимодействия для TranslationViewPage.xaml
+    /// Логика взаимодействия для TranslateViewPage.xaml
     /// </summary>
-    public partial class TranslationViewPage : Page
+    public partial class TranslateViewPage : Page
     {
         // Параграф в FlowLayout-е статьи, в котором хранится основной текст статьи
         Paragraph m_articleParagraph;
@@ -35,7 +35,7 @@ namespace FLangDictionary.UI
         // Последняя позиция мыши при движении над параграфом. Нужно для безглючной работы
         Point m_paragraphMouseMoveLastPos;
 
-        public TranslationViewPage()
+        public TranslateViewPage()
         {
             InitializeComponent();
 
