@@ -1,2 +1,11 @@
-# FLangDictionary
-Foreign language dictionary
+# FLangDictionary - Foreign language dictionary
+
+I'm going to learn spanish now, i know some techniques to start fast, but it requires time contribution each day. I'm to lazy for this shit, gonna make it little bit easier. So that's why i'm to write this software. Also i'm trying some new technologies (for me), like WPF and C# 6.0 syntax.
+
+This piece of software is meant for making learning new foreign language easy (I suppose it might be better at the very begining) by utilizing couple of subcontious methods i've tried to learn english with. I know they work, so why don't create some software to make them easy to use?
+
+The main idea is to have article (or dialog) in text form in foreign language. Then you translate each word in the meaning context. If necessary, phrases can be translated as well. Then you glue audio-record to this article, show how text words lies onto audio-record. Artistical translation can be done (with word's translation relations).
+In the result you'll have sophisticated in-contex translation of your article with audio attached. Compare this to have all of translations in your notebook and audio-record as separate file.
+What can be done to learn from this point? You can observe the article with mouse hover, watching hints with translation. You can play audio, watching words highlight in the article. If you don't get some phrase clear, you can make it loop through phrase in slower rate. Another use is that it will keep all the words from article in dictionary. You can see them in use-frequency order and learn only those which are frequent enough (or maby you like to learn ALL of them, when you only know how to say hi in spanish? Well good luck). Of course some questions can be made from this database automatically (like what does word A mean, a, b or c?). Also there are other applications.
+
+As it will be finished, i'm planning to make android version (through xamarin) of it, using the same codebase (that's why i'm using sqlite). I got used to STARDICT dictionary on my android tablet to see english-russian translations, so i decided to integrate some offline dictionary format for translation purposes (to help translate articles without need to switch to google translate all the time). So i found some java implementation of STARDICT format, and had rewritten it. It works for my english-russian dictionary, not sure for the rest.
