@@ -7,13 +7,18 @@ namespace FLangDictionary.Data
     // Статья на иностранном языке. Может иметь один или несколько художественных переводов
     class Article
     {
+        // Название статьи
+        public string Name { get; private set; }
+
         // Оригинальный текст статьи (на оригинальном иностранном языке)
         public TextInLanguage OriginalText { get; private set; }
 
         public Article(Workspace workspace, WorkspaceRepository repository, string articleName)
         {
+            Name = articleName;
+
             // Запрашиваем текст статьи у БД
-            WorkspaceRepository.FinishedText originalFinishedText = repository.GetArticleText(articleName);
+            WorkspaceRepository.FinishedText originalFinishedText = repository.GetArticleText(Name);
 
             // Создаем оригинальный текст статьи
             OriginalText = new TextInLanguage(workspace.Language.Code, originalFinishedText.text, originalFinishedText.finished);
@@ -21,7 +26,7 @@ namespace FLangDictionary.Data
             m_artisticalTranslations = new Dictionary<string, TextInLanguage>();
 
             // ToDo: также запросить тексты переводов и заполнить список переводов.
-            // Например FinishedText[] translationFinishedTexts = repository.GetArtisticalTranslationTexts(articleName);
+            // Например FinishedText[] translationFinishedTexts = repository.GetArtisticalTranslationTexts(Name);
 
             // ToDo: понять че там с еденицами перевода - m_translationUnits. Поидее их тоже надо запросить у базы и они актуальны только если оригинальный текст завершен
         }

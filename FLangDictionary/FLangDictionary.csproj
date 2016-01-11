@@ -106,6 +106,9 @@
     <Compile Include="StarDict\IdxFile.cs" />
     <Compile Include="StarDict\IfoFile.cs" />
     <Compile Include="StarDict\StarDict.cs" />
+    <Compile Include="UI\TwoButtonsWindow.xaml.cs">
+      <DependentUpon>TwoButtonsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\InputComboBoxWindow.xaml.cs">
       <DependentUpon>InputComboBoxWindow.xaml</DependentUpon>
     </Compile>
@@ -143,6 +146,10 @@
     <Page Include="UI\BrowseWorkspacesWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\TwoButtonsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\InputComboBoxWindow.xaml">
       <SubType>Designer</SubType>

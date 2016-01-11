@@ -24,5 +24,29 @@ namespace FLangDictionary.UI
         {
             InitializeComponent();
         }
+
+        // Тестовая шляпа
+        private void UpdateLabel()
+        {
+            label.Content = $"Learn page. Article = {Global.CurrentWorkspace.CurrentArticle.Name}";
+        }
+
+        private void CurrentArticleChangedHandler(object sender, EventArgs e)
+        {
+            if (Global.CurrentWorkspace.CurrentArticle != null)
+                UpdateLabel();
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            Global.CurrentArticleChanged += CurrentArticleChangedHandler;
+
+            UpdateLabel();
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Global.CurrentArticleChanged -= CurrentArticleChangedHandler;
+        }
     }
 }

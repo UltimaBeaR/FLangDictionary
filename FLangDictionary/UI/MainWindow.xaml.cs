@@ -14,10 +14,13 @@ namespace FLangDictionary.UI
         public MainWindow()
         {
             InitializeComponent();
+
+            m_currentViewMode = ViewMode.None;
         }
 
         private enum ViewMode
         {
+            None,
             WorkspaceIsNotLoaded,
             NoArticles,
             Edit,
@@ -25,16 +28,28 @@ namespace FLangDictionary.UI
             Learn
         }
 
-        private void SetViewMode(ViewMode viewMode)
+        private ViewMode m_currentViewMode;
+
+        private ViewMode CurrentViewMode
         {
-            switch (viewMode)
+            get
             {
-                case ViewMode.NoArticles: contentViewFrame.Source = new Uri("NoArticlesViewPage.xaml", UriKind.Relative); break;
-                case ViewMode.Edit: contentViewFrame.Source = new Uri("EditViewPage.xaml", UriKind.Relative); break;
-                case ViewMode.Translate: contentViewFrame.Source = new Uri("TranslateViewPage.xaml", UriKind.Relative); break;
-                case ViewMode.Learn: contentViewFrame.Source = new Uri("LearnViewPage.xaml", UriKind.Relative); break;
-                case ViewMode.WorkspaceIsNotLoaded:
-                default: contentViewFrame.Source = null; break;
+                return m_currentViewMode;
+            }
+            set
+            {
+                m_currentViewMode = value;
+                switch (m_currentViewMode)
+                {
+                    case ViewMode.NoArticles: contentViewFrame.Source = new Uri("NoArticlesViewPage.xaml", UriKind.Relative); break;
+                    case ViewMode.Edit: contentViewFrame.Source = new Uri("EditViewPage.xaml", UriKind.Relative); break;
+                    case ViewMode.Translate: contentViewFrame.Source = new Uri("TranslateViewPage.xaml", UriKind.Relative); break;
+                    case ViewMode.Learn: contentViewFrame.Source = new Uri("LearnViewPage.xaml", UriKind.Relative); break;
+
+                    case ViewMode.None:
+                    case ViewMode.WorkspaceIsNotLoaded:
+                    default: contentViewFrame.Source = null; break;
+                }
             }
         }
 
@@ -52,28 +67,35 @@ namespace FLangDictionary.UI
         {
             // Подписываемся на глобальные события
 
+            Global.CurrentArticleChanged += CurrentArticleChangedHandler;
             Global.CurrentWorkspaceChanged += CurrentWorkspaceChangedHandler;
             Global.UILanguageChanged += UILanguageChangedHandler;
 
             // При первом показе окна переходим в вид незагруженной рабочей области
-            SetViewMode(ViewMode.WorkspaceIsNotLoaded);           
+            CurrentViewMode = ViewMode.WorkspaceIsNotLoaded;           
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
         {
             // Отписываемся от всех событий
 
+            Global.CurrentArticleChanged -= CurrentArticleChangedHandler;
             Global.CurrentWorkspaceChanged -= CurrentWorkspaceChangedHandler;
             Global.UILanguageChanged -= UILanguageChangedHandler;
         }
 
-        // Вызвается при изменении языка UI
-        private void UILanguageChangedHandler(object sender, EventArgs e)
+        // Вызывается при событии смены текущей рабочей области
+        private void CurrentArticleChangedHandler(object sender, EventArgs e)
         {
-            // При смене языка обновляем заголвок - он не обновится автоматически,
-            // так как кроме фразы на текущем языке содержит еще и название открытой рабочей области
-            UpdateTitle();
+            // Если Статей не осталось (после удаления всех статей) - открываем экран с сообщением что нет статей
+            if (Global.CurrentWorkspace.ArticleNames.Length == 0)
+                CurrentViewMode = ViewMode.NoArticles;
+            // Если статья меняется, в то время как был пустой режим
+            // (После добавления первой статьи  сразу или после открытия рабочей области) - открываем режим чтения как дефолтный
+            else if (CurrentViewMode == ViewMode.None || CurrentViewMode == ViewMode.NoArticles)
+                CurrentViewMode = ViewMode.Learn;
         }
+
 
         // Вызывается при событии смены текущей рабочей области
         private void CurrentWorkspaceChangedHandler(object sender, EventArgs e)
@@ -82,16 +104,28 @@ namespace FLangDictionary.UI
             UpdateTitle();
 
             if (Global.CurrentWorkspace == null)
-                SetViewMode(ViewMode.WorkspaceIsNotLoaded);
+                CurrentViewMode = ViewMode.WorkspaceIsNotLoaded;
             else
             {
                 // Если открыли существующую рабочую область
 
                 if (Global.CurrentWorkspace.ArticleNames.Length == 0)
-                    SetViewMode(ViewMode.NoArticles);
+                    CurrentViewMode = ViewMode.NoArticles;
                 else
-                    SetViewMode(ViewMode.Learn);
+                {
+                    CurrentViewMode = ViewMode.None;
+                    // Открываем первую в порядке следования статью
+                    Global.CurrentWorkspace.OpenArticle(Global.CurrentWorkspace.ArticleNames[0]);
+                }
             }
+        }
+
+        // Вызвается при изменении языка UI
+        private void UILanguageChangedHandler(object sender, EventArgs e)
+        {
+            // При смене языка обновляем заголвок - он не обновится автоматически,
+            // так как кроме фразы на текущем языке содержит еще и название открытой рабочей области
+            UpdateTitle();
         }
 
         private void MenuItem_File_Workspace_New_Click(object sender, RoutedEventArgs e)
@@ -140,7 +174,12 @@ namespace FLangDictionary.UI
         {
             if (Global.CurrentWorkspace != null)
             {
-                UICommon.ShowDialog_CreateNewArticle(this);
+                string articleNameToCreate = UICommon.ShowDialog_CreateNewArticle(this);
+                if (articleNameToCreate != null)
+                {
+                    Global.CurrentWorkspace.AddNewArticle(articleNameToCreate);
+                    Global.CurrentWorkspace.OpenArticle(articleNameToCreate);
+                }
             }
         }
 
@@ -173,17 +212,26 @@ namespace FLangDictionary.UI
 
         private void MenuItem_View_Edit_Click(object sender, RoutedEventArgs e)
         {
-            SetViewMode(ViewMode.NoArticles);
+            if (Global.CurrentWorkspace != null && Global.CurrentWorkspace.CurrentArticle != null)
+            {
+                CurrentViewMode = ViewMode.Edit;
+            }
         }
 
         private void MenuItem_View_Translate_Click(object sender, RoutedEventArgs e)
         {
-            SetViewMode(ViewMode.Translate);
+            if (Global.CurrentWorkspace != null && Global.CurrentWorkspace.CurrentArticle != null)
+            {
+                CurrentViewMode = ViewMode.Translate;
+            }
         }
 
         private void MenuItem_View_Learn_Click(object sender, RoutedEventArgs e)
         {
-            SetViewMode(ViewMode.NoArticles);
+            if (Global.CurrentWorkspace != null && Global.CurrentWorkspace.CurrentArticle != null)
+            {
+                CurrentViewMode = ViewMode.Learn;
+            }
         }
 
         private void MenuItem_Help_About_Click(object sender, RoutedEventArgs e)

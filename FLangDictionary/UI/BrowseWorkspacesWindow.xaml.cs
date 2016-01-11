@@ -132,15 +132,18 @@ namespace FLangDictionary.UI
         {
             if (ChosenWorkspaceName != null)
             {
-                // ToDo: сделать OKCancel диалог (надо делать вручную окно, наподобие InputBoxWindow)
+                if (UICommon.ShowDialog_TwoButton(this, this.Lang("DeleteWorkspaceDialog.Title"), this.Lang("DeleteWorkspaceDialog.Message"),
+                    this.Lang("YesButtonCaption"), this.Lang("NoButtonCaption")))
+                {
 
-                // Выгружаем текущий открытый workspace перед удалением, в случае если мы его удаляем
-                if (Global.CurrentWorkspace != null && Global.CurrentWorkspace.Name == ChosenWorkspaceName)
-                    Global.CurrentWorkspace = null;
+                    // Выгружаем текущий открытый workspace перед удалением, в случае если мы его удаляем
+                    if (Global.CurrentWorkspace != null && Global.CurrentWorkspace.Name == ChosenWorkspaceName)
+                        Global.CurrentWorkspace = null;
 
-                Directory.Delete(Data.Workspace.GetWorkspaceDirectory(ChosenWorkspaceName), true);
+                    Directory.Delete(Data.Workspace.GetWorkspaceDirectory(ChosenWorkspaceName), true);
 
-                UpdateWorkspacesList();
+                    UpdateWorkspacesList();
+                }
             }
         }
     }

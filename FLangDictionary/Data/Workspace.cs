@@ -27,9 +27,17 @@ namespace FLangDictionary.Data
         // Хранятся тут для быстрого доступа к списку статей (для выбора статьи), без залезания в БД
         private string[] m_articleNames;
 
+        private Article m_currentArticle;
+
         public string Name { get { return m_name; } }
         public Logic.Languages.Language Language { get { return m_language; } }
         public string[] ArticleNames { get { return m_articleNames; } }
+
+        // Текущая статья. Если ни одной статьи у этой рабочей области нет, то тут будет null
+        public Article CurrentArticle { get { return m_currentArticle; } }
+
+        // Происходит при смене значения CurrentArticle. Не вызывается при создании рабочей области. При создании CurrentArticle всегда = null
+        public event EventHandler CurrentArticleChanged;
 
         private Workspace(string workspaceName, bool createNew = false, string languageCode = null)
         {
@@ -70,12 +78,47 @@ namespace FLangDictionary.Data
             UpdateArticleNames();
         }
 
+        public void DeleteArticle(string articleName)
+        {
+            // Заданная статья должна существовать
+            Debug.Assert(m_articleNames.Contains(articleName));
+
+            bool deletingCurrentArticle = CurrentArticle.Name == articleName;
+
+            m_repository.DeleteArticle(articleName);
+
+            // Обновим список статей, так как удалилась статья
+            UpdateArticleNames();
+
+            if (deletingCurrentArticle)
+            {
+                if (ArticleNames.Length == 0)
+                    OpenArticle(null);
+                else
+                    OpenArticle(ArticleNames[0]);
+            }
+        }
+
         // Открывает заданную по имени статью, то есть делает ее текущей (при этом происходит полная ее загрузка из бд, парсинг на синтаксическую разметку и так далее)
         // Если при этом какая-то статья была открыта, она закроется
         public void OpenArticle(string articleName)
         {
-            // Заданная статья должна существовать
-            Debug.Assert(articleName != null && m_articleNames.Contains(articleName));
+            var oldArticle = m_currentArticle;
+
+            if (articleName != null)
+            {
+                // Заданная статья должна существовать
+                Debug.Assert(m_articleNames.Contains(articleName));
+
+                m_currentArticle = new Article(this, m_repository, articleName);
+            }
+            else
+                m_currentArticle = null;
+
+            bool articleChanged = oldArticle != m_currentArticle;
+
+            if (articleChanged && CurrentArticleChanged != null)
+                CurrentArticleChanged(m_currentArticle, EventArgs.Empty);
         }
 
         // Обновление кэша, которое происходит сразу после создания объекта этого класса

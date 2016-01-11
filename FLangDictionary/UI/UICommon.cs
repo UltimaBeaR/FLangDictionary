@@ -10,6 +10,14 @@ namespace FLangDictionary.UI
 {
     class UICommon
     {
+        public static bool ShowDialog_TwoButton(Window owner, string title = "Message box", string message = "Message", string positiveCaption = "Ok", string negativeCaption = "Cancel")
+        {
+            TwoButtonsWindow dialog = new TwoButtonsWindow(title, message, positiveCaption, negativeCaption);
+            dialog.Owner = owner;
+            dialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            return dialog.ShowDialog().Value;
+        }
+
         public static string ShowDialog_CreateNewArticle(Window owner)
         {
             // Сначала нужно получить имя имя доступной новой статьи по умолчанию

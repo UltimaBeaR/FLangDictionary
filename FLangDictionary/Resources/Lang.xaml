@@ -43,10 +43,15 @@
     <!--#endregion-->
     
     <!--#region Secondary dialogs-->
+    <v:String x:Key="Lang.YesButtonCaption">Yes</v:String>
+    <v:String x:Key="Lang.NoButtonCaption">No</v:String>
     <v:String x:Key="Lang.OkButtonCaption">Ok</v:String>
     <v:String x:Key="Lang.CancelButtonCaption">Cancel</v:String>
     <v:String x:Key="Lang.CreateButtonCaption">Create</v:String>
     <v:String x:Key="Lang.RenameButtonCaption">Rename</v:String>
+    
+    <v:String x:Key="Lang.DeleteWorkspaceDialog.Title">Delete workspace</v:String>
+    <v:String x:Key="Lang.DeleteWorkspaceDialog.Message">Are you sure?</v:String>
     
     <v:String x:Key="Lang.NewWorkspaceDialog.Title">New workspace</v:String>
     <v:String x:Key="Lang.NewWorkspaceDialog.NameLabel">Workspace name</v:String>
@@ -60,6 +65,9 @@
     
     <v:String x:Key="Lang.NewArticleDialog.Title">New article</v:String>
     <v:String x:Key="Lang.NewArticleDialog.Label">Article name</v:String>
+    
+    <v:String x:Key="Lang.DeleteArticleDialog.Title">Delete article</v:String>
+    <v:String x:Key="Lang.DeleteArticleDialog.Message">Are you sure?</v:String>
     
     <v:String x:Key="Lang.BrowseWorkspaces.WindowTitle">Workspaces</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.OpenButtonCaption">Open</v:String>

@@ -90,9 +90,8 @@ namespace FLangDictionary.UI
         {
             if (ChosenArticleName != null)
             {
-                // ToDo: открыть ChosenArticleName
-
-                MessageBox.Show($"Открыли статью {ChosenArticleName}");
+                Global.CurrentWorkspace.OpenArticle(ChosenArticleName);
+                Close();
             }
         }
 
@@ -130,7 +129,11 @@ namespace FLangDictionary.UI
             string articleNameToCreate = UICommon.ShowDialog_CreateNewArticle(this);
             if (articleNameToCreate != null)
             {
-                // ToDo: создать статью articleNameToCreate
+                Global.CurrentWorkspace.AddNewArticle(articleNameToCreate);
+
+                if (Global.CurrentWorkspace.CurrentArticle == null)
+                    Global.CurrentWorkspace.OpenArticle(articleNameToCreate);
+
                 UpdateArticlesList(articleNameToCreate);
             }
         }
@@ -147,11 +150,15 @@ namespace FLangDictionary.UI
         {
             if (ChosenArticleName != null)
             {
-                // ToDo: сделать OKCancel диалог (надо делать вручную окно, наподобие InputBoxWindow)
-
-                // ToDo: выгружаем текущую статью и удаляем эту статью из рабочей области
-
-                UpdateArticlesList();
+                if (UICommon.ShowDialog_TwoButton(this, this.Lang("DeleteArticleDialog.Title"), this.Lang("DeleteArticleDialog.Message"),
+                    this.Lang("YesButtonCaption"), this.Lang("NoButtonCaption")))
+                {
+                    Global.CurrentWorkspace.DeleteArticle(ChosenArticleName);
+                    if (Global.CurrentWorkspace.CurrentArticle == null)
+                        UpdateArticlesList();
+                    else
+                        UpdateArticlesList(Global.CurrentWorkspace.CurrentArticle.Name);
+                }
             }
         }
     }

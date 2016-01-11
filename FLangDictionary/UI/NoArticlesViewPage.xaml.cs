@@ -51,7 +51,6 @@ namespace FLangDictionary.UI
         private void CreateArticleButton_Click(object sender, RoutedEventArgs e)
         {
             string articleNameToCreate = UICommon.ShowDialog_CreateNewArticle(Window.GetWindow(this));
-
             if (articleNameToCreate != null)
             {
                 Global.CurrentWorkspace.AddNewArticle(articleNameToCreate);

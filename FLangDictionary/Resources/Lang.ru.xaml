@@ -43,10 +43,15 @@
     <!--#endregion-->
     
     <!--#region Secondary dialogs-->
+    <v:String x:Key="Lang.YesButtonCaption">Да</v:String>
+    <v:String x:Key="Lang.NoButtonCaption">Нет</v:String>
     <v:String x:Key="Lang.OkButtonCaption">Ок</v:String>
     <v:String x:Key="Lang.CancelButtonCaption">Отмена</v:String>
     <v:String x:Key="Lang.CreateButtonCaption">Создать</v:String>
     <v:String x:Key="Lang.RenameButtonCaption">Переименовать</v:String>
+    
+    <v:String x:Key="Lang.DeleteWorkspaceDialog.Title">Удалить</v:String>
+    <v:String x:Key="Lang.DeleteWorkspaceDialog.Message">Вы уверены?</v:String>
     
     <v:String x:Key="Lang.NewWorkspaceDialog.Title">Новая рабочая область</v:String>
     <v:String x:Key="Lang.NewWorkspaceDialog.NameLabel">Название рабочей области</v:String>
@@ -60,6 +65,9 @@
     
     <v:String x:Key="Lang.NewArticleDialog.Title">Новая статья</v:String>
     <v:String x:Key="Lang.NewArticleDialog.Label">Название статьи</v:String>
+    
+    <v:String x:Key="Lang.DeleteArticleDialog.Title">Удалить статью</v:String>
+    <v:String x:Key="Lang.DeleteArticleDialog.Message">Вы уверены?</v:String>
     
     <v:String x:Key="Lang.BrowseWorkspaces.WindowTitle">Рабочие области</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.OpenButtonCaption">Открыть</v:String>

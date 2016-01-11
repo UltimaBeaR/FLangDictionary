@@ -92,10 +92,23 @@ namespace FLangDictionary
             }
         }
 
+        // Происходит при смене текущей статьи в текущей рабочей области
+        // НЕ вызывается при изменениях текущей рабочей области
+        public static event EventHandler CurrentArticleChanged;
+        // Происходит при смене текущей рабочей области
         public static event EventHandler CurrentWorkspaceChanged;
+        // Происходит при смене языка пользовательского интерфейса
         public static event EventHandler UILanguageChanged;
 
         private static Data.Workspace m_currentWorkspace;
+
+        // Обработик события смены статьи из конкретного Workspace
+        private static void CurrentWorkspace_CurrentArticleChangedHandler(object sender, EventArgs e)
+        {
+            // Делегируем событие на глобальный обработчик
+            if (CurrentArticleChanged != null)
+                CurrentArticleChanged(sender, e);
+        }
 
         public static Data.Workspace CurrentWorkspace
         {
@@ -108,7 +121,16 @@ namespace FLangDictionary
             {
                 if (m_currentWorkspace != value)
                 {
+                    // Если есть старая рабочая область, отпишемся от ее события изменения статьи
+                    if (m_currentWorkspace != null)
+                        m_currentWorkspace.CurrentArticleChanged -= CurrentWorkspace_CurrentArticleChangedHandler;
+
                     m_currentWorkspace = value;
+
+                    // Если есть новая рабочая область, подпишемся на ее события изменения статьи
+                    if (m_currentWorkspace != null)
+                        m_currentWorkspace.CurrentArticleChanged += CurrentWorkspace_CurrentArticleChangedHandler;
+
                     if (CurrentWorkspaceChanged != null)
                         CurrentWorkspaceChanged(m_currentWorkspace, EventArgs.Empty);
                 }

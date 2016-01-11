@@ -177,6 +177,34 @@ namespace FLangDictionary.Data
                 $");");
         }
 
+        public void DeleteArticle(string articleName)
+        {
+            // Удаляем статью, а так же все с ней связанное
+
+            int sequence = 0;
+            // Получаем sequence удаляемой статьи. Все оставшиеся sequence статей выше этой надо будет уменьшить на 1
+            ExecuteSQLQuery($"SELECT {Tables.Articles.sequence} FROM {Tables.articles} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)} LIMIT 1;",
+                (reader =>
+                {
+                    if (!reader.HasRows)
+                        throw new System.Exception($"{articleName} is not found in database");
+
+                    reader.Read();
+
+                    sequence = reader.GetInt32(0);
+                }));
+
+            // Удаляем запись со статьей
+            ExecuteSQLQuery($"DELETE FROM {Tables.articles} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)};");
+
+            // Уменьшаем sequence всех статей, у которых он выше удаляемой на 1, чтобы актуализировать последовательности
+            ExecuteSQLQuery($"UPDATE {Tables.articles} SET {Tables.Articles.sequence} = {Tables.Articles.sequence} - 1 WHERE {Tables.Articles.sequence} > {sequence};");
+
+            // ToDo: Протестить, нормально ли сместило sequence
+
+            // ToDo: Со статьей может быть много всего связанно. сейчас реализовано только простое удаление, надо доделать нормальное удаление из всех связанных таблиц
+        }
+
         // Текст и флаг его завершенности - в таком виде возвращаются данные из БД
         public struct FinishedText
         {
