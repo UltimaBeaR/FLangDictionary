@@ -31,7 +31,7 @@ namespace FLangDictionary.UI
             label.Content = $"Learn page. Article = {Global.CurrentWorkspace.CurrentArticle.Name}";
         }
 
-        private void CurrentArticleChangedHandler(object sender, EventArgs e)
+        private void CurrentArticleOpenedHandler(object sender, EventArgs e)
         {
             if (Global.CurrentWorkspace.CurrentArticle != null)
                 UpdateLabel();
@@ -39,14 +39,14 @@ namespace FLangDictionary.UI
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            Global.CurrentArticleChanged += CurrentArticleChangedHandler;
+            Global.CurrentArticleOpened += CurrentArticleOpenedHandler;
 
             UpdateLabel();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            Global.CurrentArticleChanged -= CurrentArticleChangedHandler;
+            Global.CurrentArticleOpened -= CurrentArticleOpenedHandler;
         }
     }
 }

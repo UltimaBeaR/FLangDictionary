@@ -40,6 +40,9 @@
     
     <v:String x:Key="Lang.NoArticlesView.Message">Рабочая область "{0}" не содержит статей</v:String>
     <v:String x:Key="Lang.NoArticlesView.CreateArticle">Создать статью</v:String>
+    
+    <v:String x:Key="Lang.WorkspaceIsNotLoadedView.Message">Если вы хотите открыть или создать рабочую область, нажмите</v:String>
+    <v:String x:Key="Lang.WorkspaceIsNotLoadedView.BrowseWorkspaces">Обзор рабочих областей</v:String>
     <!--#endregion-->
     
     <!--#region Secondary dialogs-->

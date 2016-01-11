@@ -205,6 +205,11 @@ namespace FLangDictionary.Data
             // ToDo: Со статьей может быть много всего связанно. сейчас реализовано только простое удаление, надо доделать нормальное удаление из всех связанных таблиц
         }
 
+        public void RenameArticle(string articleName, string newArticleName)
+        {
+            ExecuteSQLQuery($"UPDATE {Tables.articles} SET {Tables.Articles.name} = {SQLStringLiteral(newArticleName)} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)};");
+        }
+
         // Текст и флаг его завершенности - в таком виде возвращаются данные из БД
         public struct FinishedText
         {

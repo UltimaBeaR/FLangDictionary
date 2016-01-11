@@ -73,6 +73,7 @@ namespace FLangDictionary.UI
             {
                 Directory.Move(Data.Workspace.GetWorkspaceDirectory(workspaceName), Data.Workspace.GetWorkspaceDirectory(newEntityWindow.Input));
                 UpdateWorkspacesList(newEntityWindow.Input);
+                Global.CurrentWorkspace = Data.Workspace.OpenExisting(newEntityWindow.Input);
             }
         }
 
@@ -95,7 +96,10 @@ namespace FLangDictionary.UI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateWorkspacesList();
+            if (Global.CurrentWorkspace == null)
+                UpdateWorkspacesList();
+            else
+                UpdateWorkspacesList(Global.CurrentWorkspace.Name);
         }
 
         private void workspacesList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

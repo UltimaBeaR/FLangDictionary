@@ -40,6 +40,9 @@
     
     <v:String x:Key="Lang.NoArticlesView.Message">Workspace "{0}" doesn't contain any articles</v:String>
     <v:String x:Key="Lang.NoArticlesView.CreateArticle">Create article</v:String>
+    
+    <v:String x:Key="Lang.WorkspaceIsNotLoadedView.Message">If you want to open or create workspace, press</v:String>
+    <v:String x:Key="Lang.WorkspaceIsNotLoadedView.BrowseWorkspaces">Browse workspaces</v:String>
     <!--#endregion-->
     
     <!--#region Secondary dialogs-->

@@ -36,8 +36,10 @@ namespace FLangDictionary.Data
         // Текущая статья. Если ни одной статьи у этой рабочей области нет, то тут будет null
         public Article CurrentArticle { get { return m_currentArticle; } }
 
-        // Происходит при смене значения CurrentArticle. Не вызывается при создании рабочей области. При создании CurrentArticle всегда = null
-        public event EventHandler CurrentArticleChanged;
+        // Происходит при открытии очередной статьи (которая записывается после открытия в CurrentArticle)
+        // Не вызывается при создании рабочей области. При создании CurrentArticle всегда = null
+        // Вызывается даже в случае если переоткрывается та же самая статья
+        public event EventHandler CurrentArticleOpened;
 
         private Workspace(string workspaceName, bool createNew = false, string languageCode = null)
         {
@@ -99,12 +101,22 @@ namespace FLangDictionary.Data
             }
         }
 
+        public void RenameArticle(string articleName, string newArticleName)
+        {
+            m_repository.RenameArticle(articleName, newArticleName);
+
+            UpdateArticleNames();
+
+            // Если сейчас открыта переименовываемая статья - переоткроем ее (с новым именем), чтобы заного считались все новые данные в статье и вызвалось событие
+            // обновляющее UI
+            if (CurrentArticle != null && articleName == CurrentArticle.Name)
+                OpenArticle(newArticleName);
+        }
+
         // Открывает заданную по имени статью, то есть делает ее текущей (при этом происходит полная ее загрузка из бд, парсинг на синтаксическую разметку и так далее)
         // Если при этом какая-то статья была открыта, она закроется
         public void OpenArticle(string articleName)
         {
-            var oldArticle = m_currentArticle;
-
             if (articleName != null)
             {
                 // Заданная статья должна существовать
@@ -115,10 +127,8 @@ namespace FLangDictionary.Data
             else
                 m_currentArticle = null;
 
-            bool articleChanged = oldArticle != m_currentArticle;
-
-            if (articleChanged && CurrentArticleChanged != null)
-                CurrentArticleChanged(m_currentArticle, EventArgs.Empty);
+            if (CurrentArticleOpened != null)
+                CurrentArticleOpened(m_currentArticle, EventArgs.Empty);
         }
 
         // Обновление кэша, которое происходит сразу после создания объекта этого класса

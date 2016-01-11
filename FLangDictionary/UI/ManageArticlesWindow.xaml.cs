@@ -80,8 +80,8 @@ namespace FLangDictionary.UI
             newEntityWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             if (newEntityWindow.ShowDialog().Value && articleName != newEntityWindow.Input)
             {
-                // ToDo: переименовать статью на newEntityWindow.Input
-                UpdateArticlesList();
+                Global.CurrentWorkspace.RenameArticle(articleName, newEntityWindow.Input);
+                UpdateArticlesList(newEntityWindow.Input);
             }
         }
 
@@ -97,7 +97,10 @@ namespace FLangDictionary.UI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateArticlesList();
+            if (Global.CurrentWorkspace.CurrentArticle == null)
+                UpdateArticlesList();
+            else
+                UpdateArticlesList(Global.CurrentWorkspace.CurrentArticle.Name);
         }
 
         private void articlesList_MouseDoubleClick(object sender, MouseButtonEventArgs e)

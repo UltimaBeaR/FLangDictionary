@@ -41,13 +41,13 @@ namespace FLangDictionary.UI
                 m_currentViewMode = value;
                 switch (m_currentViewMode)
                 {
+                    case ViewMode.WorkspaceIsNotLoaded: contentViewFrame.Source = new Uri("WorkspaceIsNotLoadedViewPage.xaml", UriKind.Relative); break;
                     case ViewMode.NoArticles: contentViewFrame.Source = new Uri("NoArticlesViewPage.xaml", UriKind.Relative); break;
                     case ViewMode.Edit: contentViewFrame.Source = new Uri("EditViewPage.xaml", UriKind.Relative); break;
                     case ViewMode.Translate: contentViewFrame.Source = new Uri("TranslateViewPage.xaml", UriKind.Relative); break;
                     case ViewMode.Learn: contentViewFrame.Source = new Uri("LearnViewPage.xaml", UriKind.Relative); break;
 
                     case ViewMode.None:
-                    case ViewMode.WorkspaceIsNotLoaded:
                     default: contentViewFrame.Source = null; break;
                 }
             }
@@ -67,8 +67,8 @@ namespace FLangDictionary.UI
         {
             // Подписываемся на глобальные события
 
-            Global.CurrentArticleChanged += CurrentArticleChangedHandler;
-            Global.CurrentWorkspaceChanged += CurrentWorkspaceChangedHandler;
+            Global.CurrentArticleOpened += CurrentArticleOpenedHandler;
+            Global.CurrentWorkspaceSet += CurrentWorkspaceSetHandler;
             Global.UILanguageChanged += UILanguageChangedHandler;
 
             // При первом показе окна переходим в вид незагруженной рабочей области
@@ -79,13 +79,13 @@ namespace FLangDictionary.UI
         {
             // Отписываемся от всех событий
 
-            Global.CurrentArticleChanged -= CurrentArticleChangedHandler;
-            Global.CurrentWorkspaceChanged -= CurrentWorkspaceChangedHandler;
+            Global.CurrentArticleOpened -= CurrentArticleOpenedHandler;
+            Global.CurrentWorkspaceSet -= CurrentWorkspaceSetHandler;
             Global.UILanguageChanged -= UILanguageChangedHandler;
         }
 
         // Вызывается при событии смены текущей рабочей области
-        private void CurrentArticleChangedHandler(object sender, EventArgs e)
+        private void CurrentArticleOpenedHandler(object sender, EventArgs e)
         {
             // Если Статей не осталось (после удаления всех статей) - открываем экран с сообщением что нет статей
             if (Global.CurrentWorkspace.ArticleNames.Length == 0)
@@ -96,9 +96,8 @@ namespace FLangDictionary.UI
                 CurrentViewMode = ViewMode.Learn;
         }
 
-
         // Вызывается при событии смены текущей рабочей области
-        private void CurrentWorkspaceChangedHandler(object sender, EventArgs e)
+        private void CurrentWorkspaceSetHandler(object sender, EventArgs e)
         {
             // Обновляем заголовок - так как в нм отображается текущий открытый проект
             UpdateTitle();
