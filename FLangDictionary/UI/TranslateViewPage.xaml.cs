@@ -24,14 +24,14 @@ namespace FLangDictionary.UI
         // Параграф в FlowLayout-е статьи, в котором хранится основной текст статьи
         Paragraph m_articleParagraph;
         // Текст статьи. Временно. потом надо сделать Article
-        Logic.Article.TextInLanguage m_textInLang;
+        Logic.TextInLanguage m_textInLang;
         // Словарь для просмотра перевода слов и словосочетаний. Если null, значит еще не загружен
         StarDict.StarDict m_dict;
         // Список выбранных слов через клик по слову либо клик по слову с зажатием CTRL для мультивыбора
         // В этом списке слова будут идти не в порядке выбора а в порядке следования в тексте статьи
-        List<Logic.Article.TextInLanguage.SyntaxLayout.Word> m_selectedWords;
+        List<Logic.TextInLanguage.SyntaxLayout.Word> m_selectedWords;
         // Слово в статье, над которым был произведен MouseDown. Нужен для правильной обработки клика по MouseUp
-        Logic.Article.TextInLanguage.SyntaxLayout.Word m_articleMouseLeftButtonDownWord;
+        Logic.TextInLanguage.SyntaxLayout.Word m_articleMouseLeftButtonDownWord;
         // Последняя позиция мыши при движении над параграфом. Нужно для безглючной работы
         Point m_paragraphMouseMoveLastPos;
 
@@ -39,7 +39,7 @@ namespace FLangDictionary.UI
         {
             InitializeComponent();
 
-            m_selectedWords = new List<Logic.Article.TextInLanguage.SyntaxLayout.Word>();
+            m_selectedWords = new List<Logic.TextInLanguage.SyntaxLayout.Word>();
 
             m_articleParagraph = articleRichTextBox.Document.Blocks.FirstBlock as Paragraph;
 
@@ -47,7 +47,7 @@ namespace FLangDictionary.UI
         }
 
         // Обновляет состояние выделений (форматом) текста в статье
-        private void UpdateArticleVisualSelection(Logic.Article.TextInLanguage.SyntaxLayout.Word mouseOverWord)
+        private void UpdateArticleVisualSelection(Logic.TextInLanguage.SyntaxLayout.Word mouseOverWord)
         {
             int selectionCount = m_selectedWords.Count + (mouseOverWord == null ? 0 : 2);
 
@@ -126,7 +126,7 @@ namespace FLangDictionary.UI
 
         void SetText(string language, string text)
         {
-            m_textInLang = new Logic.Article.TextInLanguage(language, text, true);
+            m_textInLang = new Logic.TextInLanguage(language, text, true);
 
             m_articleParagraph.Inlines.Clear();
             m_articleParagraph.Inlines.Add(text);
@@ -164,13 +164,13 @@ namespace FLangDictionary.UI
                 return null;
         }
 
-        void GetWordFromPointer(TextPointer pointer, out Logic.Article.TextInLanguage.SyntaxLayout.Word word)
+        void GetWordFromPointer(TextPointer pointer, out Logic.TextInLanguage.SyntaxLayout.Word word)
         {
             if (pointer != null)
             {
                 int letterIdx = GetTextIndexInParagraphFromPointer(pointer);
 
-                Logic.Article.TextInLanguage.SyntaxLayout.WordInSentenceIndex index;
+                Logic.TextInLanguage.SyntaxLayout.WordInSentenceIndex index;
                 bool inWord = m_textInLang.Layout.GetWordInSentenceIndexByTextLetterIndex(letterIdx, out index);
                 var wordData = m_textInLang.Layout.GetWordByIndex(index);
 
@@ -187,7 +187,7 @@ namespace FLangDictionary.UI
 
         bool GetWordFromPointer(TextPointer pointer, out string word, out int firstIndex, out int lastIndex)
         {
-            Logic.Article.TextInLanguage.SyntaxLayout.Word wordData;
+            Logic.TextInLanguage.SyntaxLayout.Word wordData;
             GetWordFromPointer(pointer, out wordData);
 
             bool wordDataExists = wordData != null;
@@ -217,7 +217,7 @@ namespace FLangDictionary.UI
                 m_paragraphMouseMoveLastPos = Mouse.GetPosition(articleRichTextBox);
                 TextPointer pointer = articleRichTextBox.GetPositionFromPoint(Mouse.GetPosition(articleRichTextBox), false);
 
-                Logic.Article.TextInLanguage.SyntaxLayout.Word mouseOverWord;
+                Logic.TextInLanguage.SyntaxLayout.Word mouseOverWord;
                 GetWordFromPointer(pointer, out mouseOverWord);
 
                 UpdateArticleVisualSelection(mouseOverWord);
@@ -232,7 +232,7 @@ namespace FLangDictionary.UI
         private void articleRichTextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             TextPointer pointer = articleRichTextBox.GetPositionFromPoint(Mouse.GetPosition(articleRichTextBox), false);
-            Logic.Article.TextInLanguage.SyntaxLayout.Word word;
+            Logic.TextInLanguage.SyntaxLayout.Word word;
             GetWordFromPointer(pointer, out word);
 
             m_articleMouseLeftButtonDownWord = word;
@@ -243,7 +243,7 @@ namespace FLangDictionary.UI
             bool ctrlIsDown = Keyboard.GetKeyStates(Key.LeftCtrl).HasFlag(KeyStates.Down) || Keyboard.GetKeyStates(Key.RightCtrl).HasFlag(KeyStates.Down);
 
             TextPointer pointer = articleRichTextBox.GetPositionFromPoint(Mouse.GetPosition(articleRichTextBox), false);
-            Logic.Article.TextInLanguage.SyntaxLayout.Word mouseOverWord;
+            Logic.TextInLanguage.SyntaxLayout.Word mouseOverWord;
             GetWordFromPointer(pointer, out mouseOverWord);
 
             if (m_articleMouseLeftButtonDownWord == mouseOverWord)
@@ -266,7 +266,7 @@ namespace FLangDictionary.UI
             StarDictFlowDocumentBuilder.Build(string.Empty, dictionaryFlowDocument, DictionaryTermReferenceMouseUp);
         }
 
-        public void SelectWord(Logic.Article.TextInLanguage.SyntaxLayout.Word word, bool multiSelect)
+        public void SelectWord(Logic.TextInLanguage.SyntaxLayout.Word word, bool multiSelect)
         {
             if (!multiSelect)
             {

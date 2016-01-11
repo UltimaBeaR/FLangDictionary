@@ -90,6 +90,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Data\Article.cs" />
     <Compile Include="Data\Preferences.cs" />
     <Compile Include="Data\Workspace.cs" />
     <Compile Include="Data\WorkspaceRepository.DatabaseStructure.cs" />
@@ -167,8 +168,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logic\Article.cs" />
-    <Compile Include="Logic\Article.TextInLanguage.SyntaxLayout.cs" />
+    <Compile Include="Logic\TextInLanguage.cs" />
+    <Compile Include="Logic\TextInLanguage.SyntaxLayout.cs" />
     <Compile Include="Logic\Languages.cs" />
     <Compile Include="Logic\SyntaxLayoutBuilder.cs" />
     <Compile Include="TempTests.cs" />

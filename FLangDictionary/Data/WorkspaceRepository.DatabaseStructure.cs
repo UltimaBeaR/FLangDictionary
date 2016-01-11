@@ -106,13 +106,17 @@
             // То есть тут определяются временные метки внутри аудио-файла для каждого отдельного слова из оригинальной статьи
             // Это нужно для того, чтобы можно было проиграть отдельное случайно выбранное слово, зациклить его и т.д.
             // Также это используется для подсветки текущего звучащего слова по мере проигрывания аудио-записи
+            // Если индекс первого и последнео слова совпадают, то это одно слово, если второй индекс больше, то это несколько слов.
+            // Это может использоваться для привязки фразы (без разрывов посередине) или предложения или другого длинного аудио-отрывка к словам из текста
             public const string audioWordsLayout = "[AudioWordsLayout]";
             public static class AudioWordsLayout
             {
                 // Ссылка на [Id] статьи
                 public const string articleId = "[articleId]";
-                // Индекс слова (индекс первой буквы слова в тексте статьи)
-                public const string wordIndex = "[wordIndex]";
+                // Индекс первого слова (индекс первой буквы слова в тексте статьи)
+                public const string wordIndexStart = "[wordIndexStart]";
+                // Индекс последнего слова (индекс первой буквы слова в тексте статьи)
+                public const string wordIndexEnd = "[wordIndexEnd]";
                 // Время начала этого слова в аудио-файле
                 public const string audioTimeStart = "[audioTimeStart]";
                 // Время завершения этого слова в аудио-файле
@@ -210,7 +214,8 @@
                 $"(" +
                 $"[Id] integer PRIMARY KEY AUTOINCREMENT, " +
                 $"{Tables.AudioWordsLayout.articleId} integer NOT NULL, " +
-                $"{Tables.AudioWordsLayout.wordIndex} integer NOT NULL, " +
+                $"{Tables.AudioWordsLayout.wordIndexStart} integer NOT NULL, " +
+                $"{Tables.AudioWordsLayout.wordIndexEnd} integer NOT NULL, " +
                 $"{Tables.AudioWordsLayout.audioTimeStart} int8 NOT NULL, " +
                 $"{Tables.AudioWordsLayout.audioTimeEnd} int8 NOT NULL" +
                 $");");

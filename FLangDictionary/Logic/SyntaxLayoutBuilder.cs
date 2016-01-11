@@ -63,14 +63,14 @@ namespace FLangDictionary.Logic
         }
 
         // Строит синтаксическую разметку
-        public abstract Article.TextInLanguage.SyntaxLayout Build(string text);
+        public abstract TextInLanguage.SyntaxLayout Build(string text);
 
         // Универсальный метод постройки. Может работать не для всех языков, но работает для большинства, это точно
-        protected Article.TextInLanguage.SyntaxLayout BuildUniversal(string text, string wordLetters, string sentenceBeginingLetters, string sentenceEndingLetters, char exclamationEnding, char questionEnding)
+        protected TextInLanguage.SyntaxLayout BuildUniversal(string text, string wordLetters, string sentenceBeginingLetters, string sentenceEndingLetters, char exclamationEnding, char questionEnding)
         {
-            Article.TextInLanguage.SyntaxLayout result = new Article.TextInLanguage.SyntaxLayout();
+            TextInLanguage.SyntaxLayout result = new TextInLanguage.SyntaxLayout();
 
-            Article.TextInLanguage.SyntaxLayout.Sentence currentSentence = null;
+            TextInLanguage.SyntaxLayout.Sentence currentSentence = null;
             string currentWord = string.Empty;
             int currentWordStartIndex = 0;
             int lastWordLetterIndex = -1;
@@ -117,15 +117,15 @@ namespace FLangDictionary.Logic
                         BuildUniversal_FinishWord(currentSentence, ref currentWord, currentWordStartIndex, lastWordLetterIndex);
                         currentSentence.LastIndex = lastWordLetterIndex;
 
-                        var props = new Article.TextInLanguage.SyntaxLayout.Sentence.Properties();
-                        props.kind = Article.TextInLanguage.SyntaxLayout.Sentence.Kind.Declarative;
+                        var props = new TextInLanguage.SyntaxLayout.Sentence.Properties();
+                        props.kind = TextInLanguage.SyntaxLayout.Sentence.Kind.Declarative;
 
                         if (!isLastLetterOrSentenceBegining)
                         {
                             if (letter == exclamationEnding)
-                                props.kind = Article.TextInLanguage.SyntaxLayout.Sentence.Kind.Exclamation;
+                                props.kind = TextInLanguage.SyntaxLayout.Sentence.Kind.Exclamation;
                             else if (letter == questionEnding)
-                                props.kind = Article.TextInLanguage.SyntaxLayout.Sentence.Kind.Question;
+                                props.kind = TextInLanguage.SyntaxLayout.Sentence.Kind.Question;
                         }
 
                         currentSentence.Props = props;
@@ -140,11 +140,11 @@ namespace FLangDictionary.Logic
             return result;
         }
 
-        void BuildUniversal_FinishWord(Article.TextInLanguage.SyntaxLayout.Sentence sentence, ref string word, int startIndex, int endIndex)
+        void BuildUniversal_FinishWord(TextInLanguage.SyntaxLayout.Sentence sentence, ref string word, int startIndex, int endIndex)
         {
             if (word != string.Empty)
             {
-                var props = new Article.TextInLanguage.SyntaxLayout.Word.Properties();
+                var props = new TextInLanguage.SyntaxLayout.Word.Properties();
 
                 sentence.AddWord(word, startIndex, endIndex, props);
                 word = string.Empty;
@@ -160,7 +160,7 @@ namespace FLangDictionary.Logic
         {
         }
 
-        public override Article.TextInLanguage.SyntaxLayout Build(string text)
+        public override TextInLanguage.SyntaxLayout Build(string text)
         {
             const string englishAlphabet = @"abcdefghijklmnopqrstuvwxyz";
             const string englishSpecialSymbol = @"'";
@@ -183,7 +183,7 @@ namespace FLangDictionary.Logic
         {
         }
 
-        public override Article.TextInLanguage.SyntaxLayout Build(string text)
+        public override TextInLanguage.SyntaxLayout Build(string text)
         {
             const string spanishAlphabet = @"abcdefghijklmnñopqrstuvwxyzáéíóú";
             const string sentenceBeginings = @"¡¿";

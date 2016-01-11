@@ -176,5 +176,37 @@ namespace FLangDictionary.Data
                 $"NULL" + //< audioFileName - имя файла с аудиозаписью
                 $");");
         }
+
+        // Текст и флаг его завершенности - в таком виде возвращаются данные из БД
+        public struct FinishedText
+        {
+            // Текст
+            public string text;
+            // Флаг завершенности редактирования текста пользователем
+            public bool finished;
+        }
+
+        // Возвращает текст и флаг завершенности этого текста для статьи с указанным именем
+        public FinishedText GetArticleText(string articleName)
+        {
+            FinishedText res = new FinishedText();
+
+            ExecuteSQLQuery(
+                $"SELECT {Tables.Articles.text}, {Tables.Articles.finished} " +
+                $"FROM {Tables.articles} " +
+                $"WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)};",
+                (reader) =>
+                {
+                    if (!reader.HasRows)
+                        throw new System.Exception($"{articleName} is not found in database");
+
+                    reader.Read();
+
+                    res.text = reader.GetString(0);
+                    res.finished = TinyIntAsBool.BoolFromShort(reader.GetInt16(1));
+                });
+
+            return res;
+        }
     }
 }

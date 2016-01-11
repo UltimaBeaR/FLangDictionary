@@ -14,7 +14,7 @@ namespace FLangDictionary.Logic
     {
         // Оригинальный (на иностранном языке) вариант слова или фразы в виде списка ссылок на элементы разметки слов в статье
         // По сути, если перевести их в текст то получится склоненный вариант фразы без знаков препинания, для которого и ставится в соответсвие фраза-перевод
-        List<Article.TextInLanguage.SyntaxLayout.Word> m_originalPhrase;
+        List<TextInLanguage.SyntaxLayout.Word> m_originalPhrase;
         // Переведенный (на язык перевода) вариант слова или фразы в склонении слова/фразы оригинала
         string m_translatedPhrase;
         // Вариант перевода этого слова/выражения в инфинитиве
@@ -41,8 +41,8 @@ namespace FLangDictionary.Logic
     public class ArtisticalTranslationUnit
     {
         // Фраза на языке оригинала
-        List<Article.TextInLanguage.SyntaxLayout.Word> m_originalPhrase;
+        List<TextInLanguage.SyntaxLayout.Word> m_originalPhrase;
         // Переведенная фраза
-        List<Article.TextInLanguage.SyntaxLayout.Word> m_artisticalTranslatedPhrase;
+        List<TextInLanguage.SyntaxLayout.Word> m_artisticalTranslatedPhrase;
     }
 }
