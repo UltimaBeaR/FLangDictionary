@@ -47,7 +47,7 @@ namespace FLangDictionary.UI
             foreach (var lang in Global.Languages.InAlphabetOrder)
             {
                 ComboBoxItem item = new ComboBoxItem();
-                item.Content = $"{lang.EnglishName} - {lang.Name}";
+                item.Content = lang.DisplayName;
                 item.Tag = lang.Code;
                 languageList.Items.Add(item);
             }

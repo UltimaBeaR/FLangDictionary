@@ -122,6 +122,17 @@
                 // Время завершения этого слова в аудио-файле
                 public const string audioTimeEnd = "[audioTimeEnd]";
             }
+
+            // Таблица со списком языков, по которым может осуществляться перевод (как для слов/выражений, так и для художественного перевода)
+            // По сути нужна только затем, чтобы юзер мог выбрать нужные ему языки и при выборе языка на который надо переводить ему вылезал небольшой список а не огромный список со всеми языками мира
+            public const string translationLanguages = "[TranslationLanguages]";
+            public static class TranslationLanguages
+            {
+                // ToDo: сюда же можно добавлять к каждому переводимому языку какие-нибудь свойства
+
+                // Код языка
+                public const string languageCode = "[languageCode]";
+            }
         }
 
         // Помощник для работы с типом bool внутри БД, который там представляется как tinyint
@@ -218,6 +229,12 @@
                 $"{Tables.AudioWordsLayout.wordIndexEnd} integer NOT NULL, " +
                 $"{Tables.AudioWordsLayout.audioTimeStart} int8 NOT NULL, " +
                 $"{Tables.AudioWordsLayout.audioTimeEnd} int8 NOT NULL" +
+                $");");
+
+            ExecuteSQLQuery(
+                $"CREATE TABLE {Tables.translationLanguages} " +
+                $"(" +
+                $"{Tables.TranslationLanguages.languageCode} nchar(20) PRIMARY KEY" +
                 $");");
         }
 

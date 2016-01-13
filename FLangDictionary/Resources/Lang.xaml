@@ -72,6 +72,12 @@
     <v:String x:Key="Lang.DeleteArticleDialog.Title">Delete article</v:String>
     <v:String x:Key="Lang.DeleteArticleDialog.Message">Are you sure?</v:String>
     
+    <v:String x:Key="Lang.AddLanguageDialog.Title">Add language</v:String>
+    <v:String x:Key="Lang.AddLanguageDialog.Label">Choose language</v:String>
+    
+    <v:String x:Key="Lang.DeleteLanguageDialog.Title">Delete language</v:String>
+    <v:String x:Key="Lang.DeleteLanguageDialog.Message">Are you sure?</v:String>
+    
     <v:String x:Key="Lang.BrowseWorkspaces.WindowTitle">Workspaces</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.OpenButtonCaption">Open</v:String>
     <v:String x:Key="Lang.BrowseWorkspaces.DeleteButtonCaption">Delete</v:String>
@@ -85,6 +91,10 @@
     <v:String x:Key="Lang.ManageArticles.AddButtonCaption">Add</v:String>
     <v:String x:Key="Lang.ManageArticles.DownButtonCaption">Move down</v:String>
     <v:String x:Key="Lang.ManageArticles.UpButtonCaption">Move up</v:String>
+    
+    <v:String x:Key="Lang.ManageTranslationLanguages.WindowTitle">Manage translation languages</v:String>
+    <v:String x:Key="Lang.ManageTranslationLanguages.AddButtonCaption">Add</v:String>
+    <v:String x:Key="Lang.ManageTranslationLanguages.DeleteButtonCaption">Delete</v:String>
     <!--#endregion-->
     
     <!--#region Errors-->

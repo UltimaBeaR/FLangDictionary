@@ -158,12 +158,18 @@ namespace FLangDictionary.Data
             return stringBuilder.ToString();
         }
 
+        private int GetArticlesCount()
+        {
+            int articlesCount = 0;
+            ExecuteSQLQuery($"SELECT Count(*) FROM {Tables.articles};", (reader) => { reader.Read(); articlesCount = reader.GetInt32(0); });
+            return articlesCount;
+        }
+
         // Добавляет новую пустую статью с заданным именем
         public void AddArticle(string articleName)
         {
-            int sequence = 0;
-            // Сначала получим количество записей - это нужно чтобы узнать следующий sequence(порядковый номер) для этой статьи
-            ExecuteSQLQuery($"SELECT Count(*) FROM {Tables.articles};", (reader) => { reader.Read(); sequence = reader.GetInt32(0) - 1; });
+            // Узнаем следующий sequence, зависящий от количества статей, так как добавляем эту статью самой последней по последовательности
+            int sequence = GetArticlesCount();
 
             // Теперь добавим пустую статью с заданным именем и полученным порядковым номером
             ExecuteSQLQuery($"INSERT INTO {Tables.articles} VALUES " +
@@ -177,14 +183,13 @@ namespace FLangDictionary.Data
                 $");");
         }
 
-        public void DeleteArticle(string articleName)
+        // Получает индекс последовательности из заданной статьи
+        private int GetArticleSequence(string articleName)
         {
-            // Удаляем статью, а так же все с ней связанное
-
             int sequence = 0;
             // Получаем sequence удаляемой статьи. Все оставшиеся sequence статей выше этой надо будет уменьшить на 1
             ExecuteSQLQuery($"SELECT {Tables.Articles.sequence} FROM {Tables.articles} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)} LIMIT 1;",
-                (reader =>
+                (reader) =>
                 {
                     if (!reader.HasRows)
                         throw new System.Exception($"{articleName} is not found in database");
@@ -192,7 +197,16 @@ namespace FLangDictionary.Data
                     reader.Read();
 
                     sequence = reader.GetInt32(0);
-                }));
+                });
+
+            return sequence;
+        }
+
+        public void DeleteArticle(string articleName)
+        {
+            // Удаляем статью, а так же все с ней связанное
+
+            int sequence = GetArticleSequence(articleName);
 
             // Удаляем запись со статьей
             ExecuteSQLQuery($"DELETE FROM {Tables.articles} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)};");
@@ -200,14 +214,32 @@ namespace FLangDictionary.Data
             // Уменьшаем sequence всех статей, у которых он выше удаляемой на 1, чтобы актуализировать последовательности
             ExecuteSQLQuery($"UPDATE {Tables.articles} SET {Tables.Articles.sequence} = {Tables.Articles.sequence} - 1 WHERE {Tables.Articles.sequence} > {sequence};");
 
-            // ToDo: Протестить, нормально ли сместило sequence
-
             // ToDo: Со статьей может быть много всего связанно. сейчас реализовано только простое удаление, надо доделать нормальное удаление из всех связанных таблиц
         }
 
         public void RenameArticle(string articleName, string newArticleName)
         {
             ExecuteSQLQuery($"UPDATE {Tables.articles} SET {Tables.Articles.name} = {SQLStringLiteral(newArticleName)} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)};");
+        }
+
+        // Меняет порядок статьи относительно других статей (двигает вверх либо вниз по списку статей)
+        public void MoveArticle(string articleName, bool up)
+        {
+            // Для того, чтобы передвинуть статью, нужно поменять ей номер (sequence) в последовательности, при этом статья, которая сейчас
+            // Стоит на месте, куда мы хотим переместиться должна переместиться на наше старое место. То есть надо двум статьсям обменяться номерами
+
+            // Получаем текущий номер статьи, которую будем перемещать
+            int sequence = GetArticleSequence(articleName);
+            // Получаем номер статьи, с которой будем меняться местами
+            int sequenceToBeSet = up ? sequence - 1 : sequence + 1;
+
+            // В случае если статье больше некуда двигаться - выходим без изменения номера
+            if (sequenceToBeSet < 0 || sequenceToBeSet >= GetArticlesCount())
+                return;
+
+            // Меняем 2 статьи местами
+            ExecuteSQLQuery($"UPDATE {Tables.articles} SET {Tables.Articles.sequence} = {sequence} WHERE {Tables.Articles.sequence} = {sequenceToBeSet};");
+            ExecuteSQLQuery($"UPDATE {Tables.articles} SET {Tables.Articles.sequence} = {sequenceToBeSet} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)};");
         }
 
         // Текст и флаг его завершенности - в таком виде возвращаются данные из БД
@@ -240,6 +272,45 @@ namespace FLangDictionary.Data
                 });
 
             return res;
+        }
+
+        // Получает список имен статей (в алфавитном порядке)
+        public string[] GetTranslationLanguageCodes()
+        {
+            List<string> languageCodes = new List<string>();
+
+            ExecuteSQLQuery(
+                $"SELECT {Tables.TranslationLanguages.languageCode} FROM {Tables.translationLanguages};",
+                (reader) =>
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            languageCodes.Add(reader.GetString(0));
+                        }
+                    }
+                });
+
+            return languageCodes.ToArray();
+        }
+
+        // Добавляет новый язык для перевода
+        public void AddTranslationLanguage(string languageCode)
+        {
+            ExecuteSQLQuery($"INSERT INTO {Tables.translationLanguages} VALUES " +
+                $"(" +
+                $"{SQLStringLiteral(languageCode)}" +
+                $");");
+        }
+
+        // Удаляет язык для перевода
+        public void DeleteTranslationLanguage(string languageCode)
+        {
+            // Удаляем запись с языком из списка языков для перевода
+            ExecuteSQLQuery($"DELETE FROM {Tables.translationLanguages} WHERE {Tables.TranslationLanguages.languageCode} = {SQLStringLiteral(languageCode)};");
+
+            // ToDo: Когда удаляем язык, нужно каскадно удалить все связанные с этим языком переводы - то есть статьи художественного перевода и переводы слов/фраз на этом языке
         }
     }
 }

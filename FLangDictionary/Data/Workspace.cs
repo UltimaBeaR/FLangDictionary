@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FLangDictionary.Logic;
 
 namespace FLangDictionary.Data
 {
@@ -27,11 +28,15 @@ namespace FLangDictionary.Data
         // Хранятся тут для быстрого доступа к списку статей (для выбора статьи), без залезания в БД
         private string[] m_articleNames;
 
+        // Языки для перевода. Кэш. Обновляется и используется подобно именам статей.
+        private Logic.Languages.Language[] m_translationLanguages;
+
         private Article m_currentArticle;
 
         public string Name { get { return m_name; } }
         public Logic.Languages.Language Language { get { return m_language; } }
         public string[] ArticleNames { get { return m_articleNames; } }
+        public Logic.Languages.Language[] TranslationLanguages { get { return m_translationLanguages; } }
 
         // Текущая статья. Если ни одной статьи у этой рабочей области нет, то тут будет null
         public Article CurrentArticle { get { return m_currentArticle; } }
@@ -113,6 +118,13 @@ namespace FLangDictionary.Data
                 OpenArticle(newArticleName);
         }
 
+        // Перемещает статью вверх или вниз по списку статей
+        public void MoveArticle(string articleName, bool up)
+        {
+            m_repository.MoveArticle(articleName, up);
+            UpdateArticleNames();
+        }
+
         // Открывает заданную по имени статью, то есть делает ее текущей (при этом происходит полная ее загрузка из бд, парсинг на синтаксическую разметку и так далее)
         // Если при этом какая-то статья была открыта, она закроется
         public void OpenArticle(string articleName)
@@ -131,6 +143,24 @@ namespace FLangDictionary.Data
                 CurrentArticleOpened(m_currentArticle, EventArgs.Empty);
         }
 
+        public void AddTranslationLanguage(string languageCode)
+        {
+            Debug.Assert(languageCode != null && languageCode != string.Empty);
+
+            m_repository.AddTranslationLanguage(languageCode);
+
+            UpdateTranslationLanguages();
+        }
+
+        public void DeleteTranslationLanguage(string languageCode)
+        {
+            Debug.Assert(languageCode != null && languageCode != string.Empty);
+
+            m_repository.DeleteTranslationLanguage(languageCode);
+
+            UpdateTranslationLanguages();
+        }
+
         // Обновление кэша, которое происходит сразу после создания объекта этого класса
         private void InitialUpdate()
         {
@@ -140,6 +170,8 @@ namespace FLangDictionary.Data
 
             // Обновим имена статей
             UpdateArticleNames();
+            // И языки для перевода
+            UpdateTranslationLanguages();
         }
 
         // Обновляет кэш список имен статей на основании данных из БД
@@ -147,6 +179,23 @@ namespace FLangDictionary.Data
         {
             // Получаем и кэшируем список статей из репозитория
             m_articleNames = m_repository.GetArticleNames();
+        }
+
+        // Обновляет кэш список языков для перевода на основании данных из БД
+        private void UpdateTranslationLanguages()
+        {
+            // Получаем и кэшируем список статей из репозитория
+            string[] languageCodes = m_repository.GetTranslationLanguageCodes();
+
+            List<Logic.Languages.Language> languagesList = new List<Logic.Languages.Language>(languageCodes.Length);
+
+            foreach (var languageCode in languageCodes)
+                languagesList.Add(Global.Languages.GetByCode(languageCode));
+
+            // Сортируем по английскому имени (при запросе из базы такая сортировка невозможна, так как база хранит только коды языков)
+            languagesList.SortByEnglishName();
+
+            m_translationLanguages = languagesList.ToArray();
         }
 
         public static Workspace CreateNew(string workspaceName, string languageCode)

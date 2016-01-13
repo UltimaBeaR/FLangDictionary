@@ -34,6 +34,9 @@ namespace FLangDictionary.Logic
             public string Name { get; private set; }
             // Имя на английском, например "English", "Russian"
             public string EnglishName { get; private set; }
+
+            // Имя для отображения, например в списках выбора языка
+            public string DisplayName { get { return $"{EnglishName} - {Name}"; } }
         }
 
         // Список языков в алфавитном порядке
@@ -60,7 +63,7 @@ namespace FLangDictionary.Logic
                 }
             }
 
-            m_inAlphabetOrder.Sort((a, b) => { return a.EnglishName.CompareTo(b.EnglishName); });
+            m_inAlphabetOrder.SortByEnglishName();
         }
 
         // Получает язык по его коду
@@ -70,6 +73,15 @@ namespace FLangDictionary.Logic
             m_dictionary.TryGetValue(code, out res);
 
             return res;
+        }
+    }
+
+    public static class LanguagesListExtensions
+    {
+        // Сортирует список языков в алфавитном порядке, по английскому варианту имени
+        public static void SortByEnglishName(this List<Languages.Language> languages)
+        {
+            languages.Sort((a, b) => { return a.EnglishName.CompareTo(b.EnglishName); });
         }
     }
 }

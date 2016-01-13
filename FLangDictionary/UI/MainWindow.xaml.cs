@@ -195,17 +195,12 @@ namespace FLangDictionary.UI
 
         private void MenuItem_Article_ManageLanguages_Click(object sender, RoutedEventArgs e)
         {
-            string[] items = new string[Global.Languages.InAlphabetOrder.Count];
-
-            for (int i = 0; i < Global.Languages.InAlphabetOrder.Count; i++)
-                items[i] = Global.Languages.InAlphabetOrder[i].EnglishName;
-
-            InputComboBoxWindow inputComboBoxWindow = new InputComboBoxWindow(items, 0, "Выбор языка", "Язык", "Ок", "Отмена");
-            inputComboBoxWindow.Owner = this;
-            inputComboBoxWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            if (inputComboBoxWindow.ShowDialog().Value)
+            if (Global.CurrentWorkspace != null)
             {
-                MessageBox.Show(items[inputComboBoxWindow.InputComboBoxIndex]);
+                ManageTranslationLanguagesWindow manageLanguagesWindow = new ManageTranslationLanguagesWindow();
+                manageLanguagesWindow.Owner = this;
+                manageLanguagesWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                manageLanguagesWindow.ShowDialog();
             }
         }
 

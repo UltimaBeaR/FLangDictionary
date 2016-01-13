@@ -95,6 +95,9 @@
     <Compile Include="Data\Workspace.cs" />
     <Compile Include="Data\WorkspaceRepository.DatabaseStructure.cs" />
     <Compile Include="Data\WorkspaceRepository.cs" />
+    <Compile Include="UI\ManageTranslationLanguagesWindow.xaml.cs">
+      <DependentUpon>ManageTranslationLanguagesWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\BrowseWorkspacesWindow.xaml.cs">
       <DependentUpon>BrowseWorkspacesWindow.xaml</DependentUpon>
     </Compile>
@@ -145,6 +148,10 @@
     <Page Include="Resources\Lang.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ManageTranslationLanguagesWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\BrowseWorkspacesWindow.xaml">
       <SubType>Designer</SubType>

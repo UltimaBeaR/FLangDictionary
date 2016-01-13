@@ -115,16 +115,20 @@ namespace FLangDictionary.UI
 
         private void UpButton_Click(object sender, RoutedEventArgs e)
         {
-            // ToDo: UP
-
-            UpdateArticlesList(ChosenArticleName);
+            if (ChosenArticleName != null)
+            {
+                Global.CurrentWorkspace.MoveArticle(ChosenArticleName, true);
+                UpdateArticlesList(ChosenArticleName);
+            }
         }
 
         private void DownButton_Click(object sender, RoutedEventArgs e)
         {
-            // ToDo: Down
-
-            UpdateArticlesList(ChosenArticleName);
+            if (ChosenArticleName != null)
+            {
+                Global.CurrentWorkspace.MoveArticle(ChosenArticleName, false);
+                UpdateArticlesList(ChosenArticleName);
+            }
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
