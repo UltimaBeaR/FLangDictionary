@@ -92,6 +92,8 @@ namespace FLangDictionary
             }
         }
 
+        // Происходит непосредственно перед сменой текущей статьи в текущей рабочей области (когда текущая статья еще имеет старое значение)
+        public static event EventHandler CurrentArticleOpening;
         // Происходит при смене текущей статьи в текущей рабочей области
         // НЕ вызывается при изменениях текущей рабочей области
         public static event EventHandler CurrentArticleOpened;
@@ -101,6 +103,14 @@ namespace FLangDictionary
         public static event EventHandler UILanguageChanged;
 
         private static Data.Workspace m_currentWorkspace;
+
+        // Обработик события смены статьи из конкретного Workspace (происходит когда текущая статья еще не установлена в новое значение)
+        private static void CurrentWorkspace_CurrentArticleOpeningHandler(object sender, EventArgs e)
+        {
+            // Делегируем событие на глобальный обработчик
+            if (CurrentArticleOpening != null)
+                CurrentArticleOpening(sender, e);
+        }
 
         // Обработик события смены статьи из конкретного Workspace
         private static void CurrentWorkspace_CurrentArticleOpenedHandler(object sender, EventArgs e)
@@ -121,13 +131,19 @@ namespace FLangDictionary
             {
                 // Если есть старая рабочая область, отпишемся от ее события изменения статьи
                 if (m_currentWorkspace != null)
+                {
+                    m_currentWorkspace.CurrentArticleOpening -= CurrentWorkspace_CurrentArticleOpeningHandler;
                     m_currentWorkspace.CurrentArticleOpened -= CurrentWorkspace_CurrentArticleOpenedHandler;
+                }
 
                 m_currentWorkspace = value;
 
                 // Если есть новая рабочая область, подпишемся на ее события изменения статьи
                 if (m_currentWorkspace != null)
+                {
+                    m_currentWorkspace.CurrentArticleOpening += CurrentWorkspace_CurrentArticleOpeningHandler;
                     m_currentWorkspace.CurrentArticleOpened += CurrentWorkspace_CurrentArticleOpenedHandler;
+                }
 
                 if (CurrentWorkspaceSet != null)
                     CurrentWorkspaceSet(m_currentWorkspace, EventArgs.Empty);

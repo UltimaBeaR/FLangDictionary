@@ -24,6 +24,8 @@
             public const string translationsInInfinitive = "[TranslationsInInfinitive]";
             public static class TranslationsInInfinitive
             {
+                // Уникальный идентификатор
+                public const string id = "[id]";
                 // Текст оригинальной фразы в инфинитиве
                 public const string originalPhrase = "[originalPhrase]";
                 // Язык перевода
@@ -38,6 +40,8 @@
             public const string articles = "[Articles]";
             public static class Articles
             {
+                // Уникальный идентификатор
+                public const string id = "[id]";
                 // Имя статьи
                 public const string name = "[name]";
                 // Индекс последовательности статьи. Это нужно для того, чтобы была возможность поменять порядок следования уже существующих статей
@@ -57,6 +61,8 @@
             public const string artisticalTranslations = "[ArtisticalTranslations]";
             public static class ArtisticalTranslations
             {
+                // Уникальный идентификатор
+                public const string id = "[id]";
                 // Ссылка на [Id] статьи, к которой идет этот перевод
                 public const string articleId = "[articleId]";
                 // Язык перевода
@@ -74,6 +80,8 @@
             public const string translationUnits = "[TranslationUnits]";
             public static class TranslationUnits
             {
+                // Уникальный идентификатор
+                public const string id = "[id]";
                 // Ссылка на [Id] статьи
                 public const string articleId = "[articleId]";
                 // Индексы слов, из которых состоит фраза. Это индексы начал слов в строке текста статьи.
@@ -94,6 +102,8 @@
             public const string artisticalTranslationUnits = "[ArtisticalTranslationUnits]";
             public static class ArtisticalTranslationUnits
             {
+                // Уникальный идентификатор
+                public const string id = "[id]";
                 // Ссылка на [Id] статьи - художественного перевода. Ссылка на оригинал статьи находится в записи художественного перевода
                 public const string artisticalTranslationId = "[artisticalTranslationId]";
                 // Индексы слов фразы из оригинальной статьи
@@ -111,6 +121,8 @@
             public const string audioWordsLayout = "[AudioWordsLayout]";
             public static class AudioWordsLayout
             {
+                // Уникальный идентификатор
+                public const string id = "[id]";
                 // Ссылка на [Id] статьи
                 public const string articleId = "[articleId]";
                 // Индекс первого слова (индекс первой буквы слова в тексте статьи)
@@ -163,91 +175,101 @@
         {
             // Создаем всю внутреннюю инфраструктуру в БД
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"CREATE TABLE {Tables.workspaceProperties} " +
                 $"(" +
                 $"{Tables.WorkspaceProperties.key} integer PRIMARY KEY, " +
                 $"{Tables.WorkspaceProperties.value} nvarchar" +
-                $");");
+                $");"
+            );
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"CREATE TABLE {Tables.translationsInInfinitive} " +
                 $"(" +
-                $"[Id] integer PRIMARY KEY AUTOINCREMENT, " +
+                $"{Tables.TranslationsInInfinitive.id} integer PRIMARY KEY AUTOINCREMENT, " +
                 $"{Tables.TranslationsInInfinitive.originalPhrase} nchar(256) NOT NULL, " + 
                 $"{Tables.TranslationsInInfinitive.translationLanguageCode} nchar(20) NOT NULL, " + 
                 $"{Tables.TranslationsInInfinitive.translatedPhrase} nchar(256) NOT NULL" +
-                $");");
+                $");"
+            );
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"CREATE TABLE {Tables.articles} " +
                 $"(" +
-                $"[Id] integer PRIMARY KEY AUTOINCREMENT, " +
+                $"{Tables.Articles.id} integer PRIMARY KEY AUTOINCREMENT, " +
                 $"{Tables.Articles.name} nchar(60) NOT NULL, " +
                 $"{Tables.Articles.sequence} integer NOT NULL, " +
                 $"{Tables.Articles.text} nvarchar NOT NULL, " +
                 $"{Tables.Articles.finished} tinyint NOT NULL, " +
                 $"{Tables.Articles.audioFileName} nchar(256)" +
-                $");");
+                $");"
+            );
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"CREATE TABLE {Tables.artisticalTranslations} " +
                 $"(" +
-                $"[Id] integer PRIMARY KEY AUTOINCREMENT, " +
+                $"{Tables.ArtisticalTranslations.id} integer PRIMARY KEY AUTOINCREMENT, " +
                 $"{Tables.ArtisticalTranslations.articleId} integer NOT NULL, " +
                 $"{Tables.ArtisticalTranslations.languageCode} nchar(20) NOT NULL, " +
                 $"{Tables.ArtisticalTranslations.text} nvarchar NOT NULL, " +
                 $"{Tables.ArtisticalTranslations.finished} tinyint NOT NULL" +
-                $");");
+                $");"
+            );
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"CREATE TABLE {Tables.translationUnits} " +
                 $"(" +
-                $"[Id] integer PRIMARY KEY AUTOINCREMENT, " +
+                $"{Tables.TranslationUnits.id} integer PRIMARY KEY AUTOINCREMENT, " +
                 $"{Tables.TranslationUnits.articleId} integer NOT NULL, " +
                 $"{Tables.TranslationUnits.originalPhraseIndexes} nvarchar NOT NULL, " +
                 $"{Tables.TranslationUnits.translationLanguageCode} nchar(20) NOT NULL, " +
                 $"{Tables.TranslationUnits.translatedPhrase} nvarchar NOT NULL, " +
                 $"{Tables.TranslationUnits.infinitiveTranslationId} integer" +
-                $");");
+                $");"
+            );
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"CREATE TABLE {Tables.artisticalTranslationUnits} " +
                 $"(" +
-                $"[Id] integer PRIMARY KEY AUTOINCREMENT, " +
+                $"{Tables.ArtisticalTranslationUnits.id} integer PRIMARY KEY AUTOINCREMENT, " +
                 $"{Tables.ArtisticalTranslationUnits.artisticalTranslationId} integer NOT NULL, " +
                 $"{Tables.ArtisticalTranslationUnits.originalPhraseIndexes} nvarchar NOT NULL, " +
                 $"{Tables.ArtisticalTranslationUnits.translatedPhraseIndexes} nvarchar NOT NULL" +
-                $");");
+                $");"
+            );
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"CREATE TABLE {Tables.audioWordsLayout} " +
                 $"(" +
-                $"[Id] integer PRIMARY KEY AUTOINCREMENT, " +
+                $"{Tables.AudioWordsLayout.id} integer PRIMARY KEY AUTOINCREMENT, " +
                 $"{Tables.AudioWordsLayout.articleId} integer NOT NULL, " +
                 $"{Tables.AudioWordsLayout.wordIndexStart} integer NOT NULL, " +
                 $"{Tables.AudioWordsLayout.wordIndexEnd} integer NOT NULL, " +
                 $"{Tables.AudioWordsLayout.audioTimeStart} int8 NOT NULL, " +
                 $"{Tables.AudioWordsLayout.audioTimeEnd} int8 NOT NULL" +
-                $");");
+                $");"
+            );
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"CREATE TABLE {Tables.translationLanguages} " +
                 $"(" +
                 $"{Tables.TranslationLanguages.languageCode} nchar(20) PRIMARY KEY" +
-                $");");
+                $");"
+            );
         }
 
         private void SetInitialData(string languageCode)
         {
             // Записываем язык рабочей области
-            ExecuteSQLQuery($"INSERT INTO {Tables.workspaceProperties} VALUES ({WorkspacePropertyKeys.languageCode}, '{languageCode}')");
-
-            // ТЕСТЫ
-
-            /*ExecuteSQLQuery($"INSERT INTO {articles} VALUES (NULL, 'art1', 2, 'russian', '', NULL)");
-            ExecuteSQLQuery($"INSERT INTO {articles} VALUES (NULL, 'art2', 0, 'russian', '', NULL)");
-            ExecuteSQLQuery($"INSERT INTO {articles} VALUES (NULL, 'art3', 1, 'russian', '', NULL)");*/
+            ExecuteSQLQuery($"INSERT INTO {Tables.workspaceProperties} VALUES ({WorkspacePropertyKeys.languageCode}, {SQLStringLiteral(languageCode)})");
         }
     }
 }

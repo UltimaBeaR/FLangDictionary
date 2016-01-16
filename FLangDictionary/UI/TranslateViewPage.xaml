@@ -57,20 +57,19 @@
                 <RichTextBox Grid.Row="1" Margin="0,0,0,0" x:Name="articleRichTextBox" ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="True" SelectionOpacity="0" Cursor="Cross"
                                 PreviewMouseLeftButtonDown="articleRichTextBox_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="articleRichTextBox_PreviewMouseLeftButtonUp" Focusable="False">
                     <FlowDocument>
-                        <Paragraph FontSize="20" MouseMove="Paragraph_MouseMove" MouseLeave="Paragraph_MouseLeave" />
+                        <Paragraph MouseMove="Paragraph_MouseMove" MouseLeave="Paragraph_MouseLeave" x:Name="articleMainParagraph" />
                     </FlowDocument>
                 </RichTextBox>
 
                 <!--Test buttons. Temporary-->
                 <Grid Grid.Row="2">
-                    <Button x:Name="openArticle" Content="Open article" HorizontalAlignment="Left" Margin="10,10,10,10" VerticalAlignment="Bottom" Width="75" Click="openArticle_Click"/>
                     <Button x:Name="test" Content="Test" Margin="10,10,10,10" VerticalAlignment="Bottom" Click="test_Click" RenderTransformOrigin="0.5,0.5" Grid.Row="2" Height="20" HorizontalAlignment="Right" Width="75"/>
                 </Grid>
             </Grid>
         </Grid>
             
         <!--Splitter between left and right - to resize both parts-->
-        <GridSplitter Grid.Column="1" Margin="5, 0, 0, 0" ShowsPreview="False" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+        <GridSplitter Grid.Column="1" Margin="5, 0, 0, 0" ShowsPreview="True" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Gray" />
             
         <!--Right. Dictionary area-->
         <Grid Grid.Column="2">

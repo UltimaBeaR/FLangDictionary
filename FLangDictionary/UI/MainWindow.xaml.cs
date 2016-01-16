@@ -75,7 +75,7 @@ namespace FLangDictionary.UI
             CurrentViewMode = ViewMode.WorkspaceIsNotLoaded;           
         }
 
-        private void Window_Unloaded(object sender, RoutedEventArgs e)
+        private void Window_Closed(object sender, EventArgs e)
         {
             // Отписываемся от всех событий
 

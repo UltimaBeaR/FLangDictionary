@@ -1,0 +1,62 @@
+﻿<Page x:Class="FLangDictionary.UI.EditViewPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:FLangDictionary.UI"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+      Loaded="Page_Loaded"
+      Unloaded="Page_Unloaded">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <!--Верхняя часть - текст статьи-->
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            
+            <Label x:Name="articleLabel" />
+            <TextBox Grid.Row="1" Visibility="Visible" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" x:Name="articleTextEdit" />
+            <FlowDocumentScrollViewer Grid.Row="1" Visibility="Collapsed" BorderBrush="Black" BorderThickness="2" x:Name="articleTextFinished">
+                <FlowDocument Background="Beige" />
+            </FlowDocumentScrollViewer>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0, 5, 5, 5">
+                <Button Height="20" Click="FinishArticleButton_Click" x:Name="finishArticleButton" />
+                <Button Height="20" Margin="5, 0" Content="{DynamicResource Lang.EditView.OpenFromFileButtonCaption}" x:Name="articleOpenFromFileButton" Click="ArticleOpenFileButton_Click" />
+            </StackPanel>
+        </Grid>
+        
+        <GridSplitter Grid.Row="1" Height="3" ShowsPreview="False" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Gray" />
+        
+        <!--Нижняя часть - текст художественного перевода-->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{DynamicResource Lang.EditView.TranslationCaption}" />
+                <ComboBox Width="100" x:Name="translationLanguageComboBox" />
+            </StackPanel>
+            <TextBox Grid.Row="1" Visibility="Visible" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" x:Name="translationTextEdit" />
+            <FlowDocumentScrollViewer Grid.Row="1" Visibility="Collapsed" BorderBrush="Black" BorderThickness="2" x:Name="translationTextFinished">
+                <FlowDocument Background="Beige" />
+            </FlowDocumentScrollViewer>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0, 5, 5, 5">
+                <Button Height="20" Click="FinishTranslationButton_Click" x:Name="finishTranslationButton" />
+                <Button Height="20" Margin="5, 0" Content="{DynamicResource Lang.EditView.OpenFromFileButtonCaption}" Click="TranslationOpenFileButton_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

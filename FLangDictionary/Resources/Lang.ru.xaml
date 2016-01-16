@@ -43,6 +43,12 @@
     
     <v:String x:Key="Lang.WorkspaceIsNotLoadedView.Message">Если вы хотите открыть или создать рабочую область, нажмите</v:String>
     <v:String x:Key="Lang.WorkspaceIsNotLoadedView.BrowseWorkspaces">Обзор рабочих областей</v:String>
+    
+    <v:String x:Key="Lang.EditView.TranslationCaption">Художественный перевод. Язык:</v:String>
+    <v:String x:Key="Lang.EditView.FinishCaption">Завершить</v:String>
+    <v:String x:Key="Lang.EditView.EditCaption">Редактировать</v:String>
+    <v:String x:Key="Lang.EditView.OpenFromFileButtonCaption">Открыть из файла</v:String>
+    <v:String x:Key="Lang.EditView.EditButtonClickMessage">Вы собираетесь изменить завершенный текст статьи. К статье уже прикреплены некоторые объекты и они будут УДАЛЕНЫ: {0}. Вы действительно хотите продолжить?</v:String>
     <!--#endregion-->
     
     <!--#region Secondary dialogs-->

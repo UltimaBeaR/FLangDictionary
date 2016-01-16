@@ -14,6 +14,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+// ToDo: фигня какаято - если двигать мышь и пытаться выделить слово то не всегда получается. Если же над словом не двигая мышь нажать кнопку потом передвинуть и отпустить
+// над ней же то выделяется слово. Но если само нажатие шло во время движения - выделения нет. При этом пробовал во время движения нажать, потом остановить движение потом опять
+// двигать и отжимать клавишу - не выделяет. Однако если во время движения нажать, потом остановить и отпустить - выделяет. То есть видимо выделяет только если нажатие или отжатие было не во время движения.
+// Хотя там даже не движение а если движение быстрое довольно тогда только невыделяет. если медленное то все ок
+
 namespace FLangDictionary.UI
 {
     /// <summary>
@@ -21,10 +26,10 @@ namespace FLangDictionary.UI
     /// </summary>
     public partial class TranslateViewPage : Page
     {
+        private const double articleFontSize = 20;
+
         // Параграф в FlowLayout-е статьи, в котором хранится основной текст статьи
         Paragraph m_articleParagraph;
-        // Текст статьи. Временно. потом надо сделать Article
-        Logic.TextInLanguage m_textInLang;
         // Словарь для просмотра перевода слов и словосочетаний. Если null, значит еще не загружен
         StarDict.StarDict m_dict;
         // Список выбранных слов через клик по слову либо клик по слову с зажатием CTRL для мультивыбора
@@ -34,17 +39,6 @@ namespace FLangDictionary.UI
         Logic.TextInLanguage.SyntaxLayout.Word m_articleMouseLeftButtonDownWord;
         // Последняя позиция мыши при движении над параграфом. Нужно для безглючной работы
         Point m_paragraphMouseMoveLastPos;
-
-        public TranslateViewPage()
-        {
-            InitializeComponent();
-
-            m_selectedWords = new List<Logic.TextInLanguage.SyntaxLayout.Word>();
-
-            m_articleParagraph = articleRichTextBox.Document.Blocks.FirstBlock as Paragraph;
-
-            SetText(Logic.LangCodes.English, "Hello, world!");
-        }
 
         // Обновляет состояние выделений (форматом) текста в статье
         private void UpdateArticleVisualSelection(Logic.TextInLanguage.SyntaxLayout.Word mouseOverWord)
@@ -65,7 +59,7 @@ namespace FLangDictionary.UI
                 {
                     fontColor = Colors.Black,
                     fontFamily = this.FontFamily,
-                    fontSize = 20,
+                    fontSize = articleFontSize,
                     range = new FlowDocumentFormatter.Selection.Range()
                     {
                         firstIndex = m_selectedWords[i].FirstIndex,
@@ -84,7 +78,7 @@ namespace FLangDictionary.UI
                 {
                     fontColor = Colors.Black,
                     fontFamily = this.FontFamily,
-                    fontSize = 20,
+                    fontSize = articleFontSize,
                     range = new FlowDocumentFormatter.Selection.Range()
                     {
                         firstIndex = mouseOverWord.FirstIndex,
@@ -98,7 +92,7 @@ namespace FLangDictionary.UI
                 {
                     fontColor = Colors.Black,
                     fontFamily = this.FontFamily,
-                    fontSize = 20,
+                    fontSize = articleFontSize,
                     range = new FlowDocumentFormatter.Selection.Range()
                     {
                         firstIndex = mouseOverWord.Sentence.FirstIndex,
@@ -112,24 +106,26 @@ namespace FLangDictionary.UI
             FlowDocumentFormatter.SetTextVisualSelections(m_articleParagraph, selections);
         }
 
+        // Обновляет текущее визуальное представление в соответсвии с информацией из модели(бд)
+        private void UpdateVisuals()
+        {
+            m_articleParagraph.Inlines.Clear();
+            m_articleParagraph.Inlines.Add(Global.CurrentWorkspace.CurrentArticle.OriginalText.Text);
+        }
+
+        public TranslateViewPage()
+        {
+            InitializeComponent();
+
+            m_selectedWords = new List<Logic.TextInLanguage.SyntaxLayout.Word>();
+
+            m_articleParagraph = articleRichTextBox.Document.Blocks.FirstBlock as Paragraph;
+        }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("Loaded");
-        }
-
-        private void openArticle_Click(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog(Window.GetWindow(this)).Value)
-                SetText(Logic.LangCodes.Spanish, System.IO.File.ReadAllText(openFileDialog.FileName));
-        }
-
-        void SetText(string language, string text)
-        {
-            m_textInLang = new Logic.TextInLanguage(language, text, true);
-
-            m_articleParagraph.Inlines.Clear();
-            m_articleParagraph.Inlines.Add(text);
+            articleMainParagraph.FontSize = articleFontSize;
+            UpdateVisuals();
         }
 
         private void test_Click(object sender, RoutedEventArgs e)
@@ -171,8 +167,8 @@ namespace FLangDictionary.UI
                 int letterIdx = GetTextIndexInParagraphFromPointer(pointer);
 
                 Logic.TextInLanguage.SyntaxLayout.WordInSentenceIndex index;
-                bool inWord = m_textInLang.Layout.GetWordInSentenceIndexByTextLetterIndex(letterIdx, out index);
-                var wordData = m_textInLang.Layout.GetWordByIndex(index);
+                bool inWord = Global.CurrentWorkspace.CurrentArticle.OriginalText.Layout.GetWordInSentenceIndexByTextLetterIndex(letterIdx, out index);
+                var wordData = Global.CurrentWorkspace.CurrentArticle.OriginalText.Layout.GetWordByIndex(index);
 
                 if (inWord)
                     word = wordData;
@@ -221,6 +217,9 @@ namespace FLangDictionary.UI
                 GetWordFromPointer(pointer, out mouseOverWord);
 
                 UpdateArticleVisualSelection(mouseOverWord);
+
+                // ToDo: и тем не менее глюк в заголовке этого файла происходит в том случае когда заходим в это условие (когда мышка не двигается)
+                // Тупо перестает приходить событие mouseup/down
             }
         }
 

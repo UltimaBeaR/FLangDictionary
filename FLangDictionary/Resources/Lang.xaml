@@ -43,6 +43,12 @@
     
     <v:String x:Key="Lang.WorkspaceIsNotLoadedView.Message">If you want to open or create workspace, press</v:String>
     <v:String x:Key="Lang.WorkspaceIsNotLoadedView.BrowseWorkspaces">Browse workspaces</v:String>
+    
+    <v:String x:Key="Lang.EditView.TranslationCaption">Artistical translation. Language:</v:String>
+    <v:String x:Key="Lang.EditView.FinishCaption">Finish</v:String>
+    <v:String x:Key="Lang.EditView.EditCaption">Edit</v:String>
+    <v:String x:Key="Lang.EditView.OpenFromFileButtonCaption">Open from file</v:String>
+    <v:String x:Key="Lang.EditView.EditButtonClickMessage">You are to change finished article text. Article already has some linked items, which will be REMOVED: {0}. Are you sure you want to do it?</v:String>
     <!--#endregion-->
     
     <!--#region Secondary dialogs-->

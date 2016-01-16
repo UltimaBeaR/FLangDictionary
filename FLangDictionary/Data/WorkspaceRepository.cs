@@ -99,8 +99,11 @@ namespace FLangDictionary.Data
         private string GetWorkspaceProperty(int key)
         {
             string res = null;
-            ExecuteSQLQuery(
+
+            ExecuteSQLQuery
+            (
                 $"SELECT {Tables.WorkspaceProperties.value} FROM {Tables.workspaceProperties};",
+                
                 (reader) =>
                 {
                     if (reader.HasRows)
@@ -108,7 +111,8 @@ namespace FLangDictionary.Data
                         reader.Read();
                         res = reader.GetString(0);
                     }
-                });
+                }
+            );
 
             return res;
         }
@@ -124,9 +128,11 @@ namespace FLangDictionary.Data
         {
             List<string> articleNames = new List<string>();
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"SELECT {Tables.Articles.name} FROM {Tables.articles} " +
                 $"ORDER BY {Tables.Articles.sequence};",
+                
                 (reader) =>
                 {
                     if (reader.HasRows)
@@ -136,7 +142,8 @@ namespace FLangDictionary.Data
                             articleNames.Add(reader.GetString(0));
                         }
                     }
-                });
+                }
+            );
 
             return articleNames.ToArray();
         }
@@ -172,7 +179,9 @@ namespace FLangDictionary.Data
             int sequence = GetArticlesCount();
 
             // Теперь добавим пустую статью с заданным именем и полученным порядковым номером
-            ExecuteSQLQuery($"INSERT INTO {Tables.articles} VALUES " +
+            ExecuteSQLQuery
+            (
+                $"INSERT INTO {Tables.articles} VALUES " +
                 $"(" +
                 $"NULL, " + //< Id (Автоинкремент)
                 $"{SQLStringLiteral(articleName)}, " + // name - Имя статьи
@@ -180,15 +189,20 @@ namespace FLangDictionary.Data
                 $"'', " + //< text - текст статьи
                 $"{TinyIntAsBool.falseStr}, " + //< finished - флаг завершенности статьи
                 $"NULL" + //< audioFileName - имя файла с аудиозаписью
-                $");");
+                $");"
+            );
         }
 
         // Получает индекс последовательности из заданной статьи
         private int GetArticleSequence(string articleName)
         {
             int sequence = 0;
+
             // Получаем sequence удаляемой статьи. Все оставшиеся sequence статей выше этой надо будет уменьшить на 1
-            ExecuteSQLQuery($"SELECT {Tables.Articles.sequence} FROM {Tables.articles} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)} LIMIT 1;",
+            ExecuteSQLQuery
+            (
+                $"SELECT {Tables.Articles.sequence} FROM {Tables.articles} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)} LIMIT 1;",
+                
                 (reader) =>
                 {
                     if (!reader.HasRows)
@@ -197,7 +211,8 @@ namespace FLangDictionary.Data
                     reader.Read();
 
                     sequence = reader.GetInt32(0);
-                });
+                }
+            );
 
             return sequence;
         }
@@ -256,10 +271,13 @@ namespace FLangDictionary.Data
         {
             FinishedText res = new FinishedText();
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"SELECT {Tables.Articles.text}, {Tables.Articles.finished} " +
                 $"FROM {Tables.articles} " +
-                $"WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)};",
+                $"WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)} " +
+                $"LIMIT 1;",
+                
                 (reader) =>
                 {
                     if (!reader.HasRows)
@@ -269,7 +287,122 @@ namespace FLangDictionary.Data
 
                     res.text = reader.GetString(0);
                     res.finished = TinyIntAsBool.BoolFromShort(reader.GetInt16(1));
-                });
+                }
+            );
+
+            return res;
+        }
+
+        public bool GetArticleFinishedState(string articleName)
+        {
+            Debug.Assert(articleName != null);
+
+            bool isArticleFinished = false;
+
+            // Получаем значение finished для статьи
+            ExecuteSQLQuery
+            (
+                $"SELECT {Tables.Articles.finished} " +
+                $"FROM {Tables.articles} " +
+                $"WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)} " +
+                $"LIMIT 1;",
+
+                (reader) =>
+                {
+                    if (!reader.HasRows)
+                        throw new System.Exception($"{articleName} is not found in database");
+
+                    reader.Read();
+
+                    isArticleFinished = TinyIntAsBool.BoolFromShort(reader.GetInt16(0));
+                }
+            );
+
+            return isArticleFinished;
+        }
+
+        // Устанавливает текст статьи с заданным именем.
+        // устанавливать текст можно только в случае если статья finished
+        public void SetArticleText(string articleName, string newText)
+        {
+            Debug.Assert(articleName != null && newText != null);
+
+            bool isArticleFinished = GetArticleFinishedState(articleName);
+
+            if (isArticleFinished)
+                throw new System.Exception("Cannot set new text to article while it is in finished mode");
+            else
+            {
+                // Устанавливаем новый текст
+                ExecuteSQLQuery($"UPDATE {Tables.articles} SET {Tables.Articles.text} = {SQLStringLiteral(newText)} " +
+                    $"WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)};");
+            }
+        }
+
+        // Устанавливает состояние завершенности для статьи. Если устанавливаем состояние false, а до этого было true,
+        // То также удалятся все связанные с этой статьей сущности, требующие состояния завершенности (привязанные переводы слов и худ. переводы, тайминги аудио-разметки)
+        public void SetArticleFinishedState(string articleName, bool finished)
+        {
+            // Если состояние не меняется - выходим
+            if (finished == GetArticleFinishedState(articleName))
+                return;
+
+            // Ставим статье finished = true
+            ExecuteSQLQuery($"UPDATE {Tables.articles} SET {Tables.Articles.finished} = {TinyIntAsBool.StrFromBool(finished)} " +
+                $"WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)};");
+
+            if (!finished)
+            {
+                // ToDo: случай, когда завершенное состояние меняем на незавершенного - нужно удалить все связи в бд 
+            }
+        }
+
+        // Возвращает текст и флаг завершенности этого текста для художественного перевода с указанным языком, который принадлежит статье с указанным именем
+        // В случае, если для такого языка нет художественного перевода - в поле text возвращаемой структуры будет null
+        public FinishedText GetArtisticalTranslaionText(string articleName, string languageCode)
+        {
+            FinishedText res = new FinishedText();
+
+            int articleId = -1;
+
+            // запрашиваем articleId по articleName
+            ExecuteSQLQuery
+            (
+                $"SELECT {Tables.Articles.id} " +
+                $"FROM {Tables.articles} " +
+                $"WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)} " +
+                $"LIMIT 1;",
+
+                (reader) =>
+                {
+                    if (!reader.HasRows)
+                        throw new System.Exception($"{articleName} is not found in database");
+
+                    reader.Read();
+
+                    articleId = reader.GetInt32(0);
+                }
+            );
+
+            ExecuteSQLQuery
+            (
+                $"SELECT {Tables.ArtisticalTranslations.text}, {Tables.ArtisticalTranslations.finished} " +
+                $"FROM {Tables.artisticalTranslations} " +
+                $"WHERE {Tables.ArtisticalTranslations.articleId} = {articleId} and {Tables.ArtisticalTranslations.languageCode} = {SQLStringLiteral(languageCode)} " +
+                $"LIMIT 1;",
+
+                (reader) =>
+                {
+                    // Если для этого языка еще нет перевода, то выходим. В этом случае будет значение по умолчанию (text = null)
+                    if (!reader.HasRows)
+                        return;
+
+                    reader.Read();
+
+                    res.text = reader.GetString(0);
+                    res.finished = TinyIntAsBool.BoolFromShort(reader.GetInt16(1));
+                }
+            );
 
             return res;
         }
@@ -279,8 +412,10 @@ namespace FLangDictionary.Data
         {
             List<string> languageCodes = new List<string>();
 
-            ExecuteSQLQuery(
+            ExecuteSQLQuery
+            (
                 $"SELECT {Tables.TranslationLanguages.languageCode} FROM {Tables.translationLanguages};",
+                
                 (reader) =>
                 {
                     if (reader.HasRows)
@@ -290,7 +425,8 @@ namespace FLangDictionary.Data
                             languageCodes.Add(reader.GetString(0));
                         }
                     }
-                });
+                }
+            );
 
             return languageCodes.ToArray();
         }
@@ -298,10 +434,13 @@ namespace FLangDictionary.Data
         // Добавляет новый язык для перевода
         public void AddTranslationLanguage(string languageCode)
         {
-            ExecuteSQLQuery($"INSERT INTO {Tables.translationLanguages} VALUES " +
+            ExecuteSQLQuery
+            (
+                $"INSERT INTO {Tables.translationLanguages} VALUES " +
                 $"(" +
                 $"{SQLStringLiteral(languageCode)}" +
-                $");");
+                $");"
+            );
         }
 
         // Удаляет язык для перевода

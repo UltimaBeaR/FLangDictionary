@@ -41,6 +41,8 @@ namespace FLangDictionary.Data
         // Текущая статья. Если ни одной статьи у этой рабочей области нет, то тут будет null
         public Article CurrentArticle { get { return m_currentArticle; } }
 
+        // Происходит в момент открытия статьи, но перед открытыием. То есть в этот момент текущей статьей будет еще старая статья
+        public event EventHandler CurrentArticleOpening;
         // Происходит при открытии очередной статьи (которая записывается после открытия в CurrentArticle)
         // Не вызывается при создании рабочей области. При создании CurrentArticle всегда = null
         // Вызывается даже в случае если переоткрывается та же самая статья
@@ -129,6 +131,9 @@ namespace FLangDictionary.Data
         // Если при этом какая-то статья была открыта, она закроется
         public void OpenArticle(string articleName)
         {
+            if (CurrentArticleOpening != null)
+                CurrentArticleOpening(m_currentArticle, EventArgs.Empty);
+
             if (articleName != null)
             {
                 // Заданная статья должна существовать
