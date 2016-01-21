@@ -1,4 +1,5 @@
 ﻿using Mono.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -450,6 +451,66 @@ namespace FLangDictionary.Data
             ExecuteSQLQuery($"DELETE FROM {Tables.translationLanguages} WHERE {Tables.TranslationLanguages.languageCode} = {SQLStringLiteral(languageCode)};");
 
             // ToDo: Когда удаляем язык, нужно каскадно удалить все связанные с этим языком переводы - то есть статьи художественного перевода и переводы слов/фраз на этом языке
+        }
+
+        public struct RawTranslationUnit
+        {
+            public string originalPhraseIndexes;
+            public string translatedPhrase;
+            public string infinitiveOriginalPhrase;
+            public string infinitiveTranslatedPhrase;
+        }
+
+        // Подзапрос для получения id статьи из ее имени
+        private string ArticleIdByNameSubquery(string articleName)
+        {
+            return $"(SELECT {Tables.Articles.id} FROM {Tables.articles} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)})";
+        }
+
+        // ToDo: GetTranslationUnits() полностью рабочий. null обрабатывает в Tables.TranslationUnits.infinitiveTranslationId.
+        // Конвертация из сырых TranslationUnit в нормальные тоже норм. Остается сделать такой же метод для записи в базу и проверить все это дело и можно идти дальше
+
+        // Получает набор едениц перевода для заданного языка в заданной статье
+        public RawTranslationUnit[] GetTranslationUnits(string articleName, string translationLanguageCode)
+        {
+            List<RawTranslationUnit> units = new List<RawTranslationUnit>();
+
+            ExecuteSQLQuery
+            (
+                $"SELECT t1.{Tables.TranslationUnits.originalPhraseIndexes}, t1.{Tables.TranslationUnits.translatedPhrase}, " +
+                $"t2.{Tables.TranslationsInInfinitive.originalPhrase}, t2.{Tables.TranslationsInInfinitive.translatedPhrase} " +
+                $"FROM {Tables.translationUnits} t1 " +
+                $"LEFT JOIN {Tables.translationsInInfinitive} t2 " +
+                $"ON t1.{Tables.TranslationUnits.infinitiveTranslationId} = t2.{Tables.TranslationsInInfinitive.id} " +
+                $"WHERE t1.{Tables.TranslationUnits.articleId} = {ArticleIdByNameSubquery(articleName)} and " +
+                $"t1.{Tables.TranslationUnits.translationLanguageCode} = {SQLStringLiteral(translationLanguageCode)};",
+
+                (reader) =>
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            RawTranslationUnit unit = new RawTranslationUnit();
+
+                            unit.originalPhraseIndexes = reader.GetString(0);
+                            unit.translatedPhrase = reader.GetString(1);
+
+                            // Проверяем значения в инфинитиве на null. Потому как они могут быть не заданы и в этом случае будут null.
+                            // Если они null, то и в выходных данных оставляем дефолтный null
+                            if (!reader.IsDBNull(2))
+                            {
+                                unit.infinitiveOriginalPhrase = reader.GetString(2);
+                                unit.infinitiveTranslatedPhrase = reader.GetString(3);
+                            }
+
+                            units.Add(unit);
+                        }
+                    }
+                }
+            );
+
+            return units.ToArray();
         }
     }
 }

@@ -63,6 +63,18 @@ namespace FLangDictionary.Logic
                     return m_words[wordIndex];
                 }
 
+                // Получает слово по его значению FirstIndex
+                public Word GetWordByFirstIndex(int firstIndex)
+                {
+                    for (int wordIdx = 0; wordIdx < m_words.Count; wordIdx++)
+                    {
+                        if (m_words[wordIdx].FirstIndex == firstIndex)
+                            return m_words[wordIdx];
+                    }
+
+                    return null;
+                }
+
                 // Получает локальный индекс слова в текущем предложении по глобальному индексу символа в полном тексте статьи
                 // Возвращаемое значение работает также как в SyntaxLayout::GetWordInSentenceIndexByTextLetterIndex()
                 public bool GetWordIndexByTextLetterIndex(int textLetterIndex, out int wordIndex)
@@ -216,6 +228,18 @@ namespace FLangDictionary.Logic
                     if (m_sentences[index].WordCount == 0)
                         m_sentences.RemoveAt(index);
                 }
+            }
+
+            // Получает слово по его значению FirstIndex (null, если такого нет)
+            public Word GetWordByFirstIndex(int firstIndex)
+            {
+                for (int sentenceIdx = 0; sentenceIdx < m_sentences.Count; sentenceIdx++)
+                {
+                    if (firstIndex >= m_sentences[sentenceIdx].FirstIndex && firstIndex <= m_sentences[sentenceIdx].LastIndex)
+                        return m_sentences[sentenceIdx].GetWordByFirstIndex(firstIndex);
+                }
+
+                return null;
             }
 
             // По индексу символа из исходной строки текста получает индекс слова в предложении

@@ -16,12 +16,13 @@ namespace FLangDictionary.Data
         // Оригинальный текст статьи (на оригинальном иностранном языке)
         public TextInLanguage OriginalText { get; private set; }
 
-        // Список едениц перевода для этой статьи
-        private List<TranslationUnit> m_translationUnits;
-
         // Текущий (открытый) художественный перевод
         // Может быть null. Но если идет попытка открыть текст перевода на существующий язык для перевода то тут никогда не будет null
         public TextInLanguage CurrentArtisticalTranslation { get; private set; }
+
+        // Еденицы перевода. Ключ содержит код языка, для которого идет перевод.
+        // Значение содержит список едениц перевода. Порядок в этом списке не имеет значения.
+        Dictionary<string, List<TranslationUnit>> m_translationUnits;
 
         public Article(Workspace workspace, WorkspaceRepository repository, string articleName)
         {
@@ -38,9 +39,45 @@ namespace FLangDictionary.Data
 
             CurrentArtisticalTranslation = null;
 
-            // ToDo: Пока так, потом поменять
-            // ToDo: понять че там с еденицами перевода - m_translationUnits. Поидее их тоже надо запросить у базы и они актуальны только если оригинальный текст завершен
-            m_translationUnits = null;
+            UpdateTranslationUnits();
+        }
+
+        // Обновление текущих едениц перевода
+        private void UpdateTranslationUnits()
+        {
+            // Заполняем текущие еденицы перевода - проходим по языкам, которые заданы для перевода и для каждого запрашиваем у базы
+            // список едениц перевода
+
+            m_translationUnits = new Dictionary<string, List<TranslationUnit>>();
+            foreach (var translationLanguage in m_workspace.TranslationLanguages)
+            {
+                List<TranslationUnit> translationLanguageUnits = new List<TranslationUnit>();
+                m_translationUnits.Add(translationLanguage.Code, translationLanguageUnits);
+
+                // Запрашиваем список едениц перевода у БД и засовываем его в подготовленный для этого список
+                var rawTranslationLanguageUnits = m_repository.GetTranslationUnits(Name, translationLanguage.Code);
+                foreach (var rawTranslationLanguageUnit in rawTranslationLanguageUnits)
+                {
+                    // Перерабатываем сырую еденицу перевода (данные из БД) в нормальную и засовываем ее в список
+
+                    TranslationUnit translationUnit = new TranslationUnit(OriginalText.GetPhraseWords(rawTranslationLanguageUnit.originalPhraseIndexes));
+                    translationUnit.translatedPhrase = rawTranslationLanguageUnit.translatedPhrase;
+                    translationUnit.infinitiveTranslation.originalPhrase = rawTranslationLanguageUnit.infinitiveOriginalPhrase;
+                    translationUnit.infinitiveTranslation.translatedPhrase = rawTranslationLanguageUnit.infinitiveTranslatedPhrase;
+
+                    translationLanguageUnits.Add(translationUnit);
+                }
+            }
+        }
+
+        public void BeforeTranslationLanguagesChanged()
+        {
+            // ToDo: надо сохранить все текущие изменения в еденицах перевода
+        }
+
+        public void AfterTranslationLanguagesChanged()
+        {
+            UpdateTranslationUnits();
         }
 
         public void ChangeArticleText(string newText)

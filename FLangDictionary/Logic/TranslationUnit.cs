@@ -12,13 +12,18 @@ namespace FLangDictionary.Logic
     // могут иметь один и тот же инфинитив с одним вариантом перевода
     public class TranslationUnit
     {
+        public TranslationUnit(TextInLanguage.SyntaxLayout.Word[] originalPhrase)
+        {
+            OriginalPhrase = originalPhrase;
+        }
+
         // Оригинальный (на иностранном языке) вариант слова или фразы в виде списка ссылок на элементы разметки слов в статье
         // По сути, если перевести их в текст то получится склоненный вариант фразы без знаков препинания, для которого и ставится в соответсвие фраза-перевод
-        List<TextInLanguage.SyntaxLayout.Word> m_originalPhrase;
+        public TextInLanguage.SyntaxLayout.Word[] OriginalPhrase { get; private set; }
         // Переведенный (на язык перевода) вариант слова или фразы в склонении слова/фразы оригинала
-        string m_translatedPhrase;
+        public string translatedPhrase;
         // Вариант перевода этого слова/выражения в инфинитиве
-        TranslationInInfinitive m_infinitiveTranslation;
+        public TranslationInInfinitive infinitiveTranslation;
     }
 
     // Перевод слова/словосочетания в определенном смысле в форме инфинитива
@@ -35,14 +40,5 @@ namespace FLangDictionary.Logic
         public string originalPhrase;
         // Переведенный (на язык перевода) вариант слова или фразы
         public string translatedPhrase;
-    }
-
-    // Еденица художественного перевода. По сути это связь слова/фразы в тексте оригинала со словом/фразой в тексте художественного перевода
-    public class ArtisticalTranslationUnit
-    {
-        // Фраза на языке оригинала
-        List<TextInLanguage.SyntaxLayout.Word> m_originalPhrase;
-        // Переведенная фраза
-        List<TextInLanguage.SyntaxLayout.Word> m_artisticalTranslatedPhrase;
     }
 }

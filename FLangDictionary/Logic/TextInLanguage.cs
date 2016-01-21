@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 
 namespace FLangDictionary.Logic
 {
@@ -57,15 +60,53 @@ namespace FLangDictionary.Logic
         // Синтаксическая разметка. Доступна только, когда текст завершен (finished)
         public SyntaxLayout Layout { get { return m_syntaxLayout; } }
 
+        // Синтаксическая разметка данного текста. С ее помощью можно определить, например, зная определенную позицию символа в тексте, 
+        // к какому предложению и слову относится эта позиция, либо, например, что эта позиция вообще не является словом
+        SyntaxLayout m_syntaxLayout;
+
         // Получает строку текста из слов в составе синтаксической разметки
         public string GetTextFromSyntaxLayout()
         {
             return m_syntaxLayout.ToString();
         }
 
-        // Синтаксическая разметка данного текста. С ее помощью можно определить, например, зная определенную позицию символа в тексте, 
-        // к какому предложению и слову относится эта позиция, либо, например, что эта позиция вообще не является словом
-        SyntaxLayout m_syntaxLayout;
+        // По строке с индексами вида " 0 12 16 80 " получает список слов 
+        public SyntaxLayout.Word[] GetPhraseWords(string phraseIndexes)
+        {
+            Debug.Assert(phraseIndexes != null);
+
+            if (phraseIndexes == "")
+                return new SyntaxLayout.Word[0];
+
+            string[] indexes = phraseIndexes.Split(' ');
+            SyntaxLayout.Word[] res = new SyntaxLayout.Word[indexes.Length - 2];
+            for (int i = 1; i < indexes.Length - 1; i++)
+            {
+                res[i - 1] = m_syntaxLayout.GetWordByFirstIndex(Convert.ToInt32(indexes[i]));
+                Debug.Assert(res[i - 1] != null);
+            }
+
+            return res;
+        }
+
+        // По списку слов получает строку вида " 0 12 16 80 " (в таком виде слова хранятся в базе данных)
+        public static string GetPhraseIndexes(SyntaxLayout.Word[] phraseWords)
+        {
+            Debug.Assert(phraseWords != null);
+
+            if (phraseWords.Length == 0)
+                return "";
+
+            StringBuilder sb = new StringBuilder(" ");
+
+            foreach (var word in phraseWords)
+            {
+                sb.Append(word.FirstIndex.ToString());
+                sb.Append(' ');
+            }
+
+            return sb.ToString();
+        }
 
         // Строит синтаксическую разметку по данному тексту и помещает ее в m_syntaxLayout
         void BuildSyntaxLayout(bool finished)

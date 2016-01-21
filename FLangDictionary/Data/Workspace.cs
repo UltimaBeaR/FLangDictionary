@@ -152,18 +152,30 @@ namespace FLangDictionary.Data
         {
             Debug.Assert(languageCode != null && languageCode != string.Empty);
 
+            if (m_currentArticle != null)
+                m_currentArticle.BeforeTranslationLanguagesChanged();
+
             m_repository.AddTranslationLanguage(languageCode);
 
             UpdateTranslationLanguages();
+
+            if (m_currentArticle != null)
+                m_currentArticle.AfterTranslationLanguagesChanged();
         }
 
         public void DeleteTranslationLanguage(string languageCode)
         {
             Debug.Assert(languageCode != null && languageCode != string.Empty);
 
+            if (m_currentArticle != null)
+                m_currentArticle.BeforeTranslationLanguagesChanged();
+
             m_repository.DeleteTranslationLanguage(languageCode);
 
             UpdateTranslationLanguages();
+
+            if (m_currentArticle != null)
+                m_currentArticle.AfterTranslationLanguagesChanged();
         }
 
         // Обновление кэша, которое происходит сразу после создания объекта этого класса
