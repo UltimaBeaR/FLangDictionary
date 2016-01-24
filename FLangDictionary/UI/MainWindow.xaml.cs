@@ -68,7 +68,7 @@ namespace FLangDictionary.UI
             // Подписываемся на глобальные события
 
             Global.CurrentArticleOpened += CurrentArticleOpenedHandler;
-            Global.CurrentWorkspaceSet += CurrentWorkspaceSetHandler;
+            Global.AfterCurrentWorkspaceSet += CurrentWorkspaceSetHandler;
             Global.UILanguageChanged += UILanguageChangedHandler;
 
             // При первом показе окна переходим в вид незагруженной рабочей области
@@ -80,7 +80,7 @@ namespace FLangDictionary.UI
             // Отписываемся от всех событий
 
             Global.CurrentArticleOpened -= CurrentArticleOpenedHandler;
-            Global.CurrentWorkspaceSet -= CurrentWorkspaceSetHandler;
+            Global.AfterCurrentWorkspaceSet -= CurrentWorkspaceSetHandler;
             Global.UILanguageChanged -= UILanguageChangedHandler;
         }
 

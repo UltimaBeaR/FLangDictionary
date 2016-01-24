@@ -23,8 +23,19 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                     
-                <!--Word edit area-->
-                <Grid Grid.Row="0">
+                <!--Word (Translation unit) edit area-->
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Label Grid.Column="0" Content="Translation language" />
+                        <ComboBox Grid.Column="1" />    
+                    </Grid>
+                    
+                    <Grid Grid.Row="0">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
@@ -44,14 +55,15 @@
                     <Label Grid.Row="2" Grid.Column="0" Margin="0, 0, 0, 10" Content="{DynamicResource Lang.TranslateView.FromArticleCaption}" />
                         
                     <!--Original infinitive-->
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="m_textBoxOriginalInfinitive" Text="original infinitive" />
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="textBoxOriginalInfinitive" Text="original infinitive" />
                     <!--Translated infinitive-->
-                    <TextBox Grid.Row="1" Grid.Column="2" x:Name="m_textBoxTranslatedInfinitive" Text="translated infinitive" />
+                    <TextBox Grid.Row="1" Grid.Column="2" x:Name="textBoxTranslatedInfinitive" Text="translated infinitive" />
                     <!--Original from article-->
-                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0, 0, 0, 10" x:Name="m_textBoxOriginal" IsReadOnly="True" Text="original" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0, 0, 0, 10" x:Name="textBoxOriginal" IsReadOnly="True" Text="original" />
                     <!--Translated from article-->
-                    <TextBox Grid.Row="2" Grid.Column="2" Margin="0, 0, 0, 10" x:Name="m_textBoxTranslated" Text="translated" />
+                    <TextBox Grid.Row="2" Grid.Column="2" Margin="0, 0, 0, 10" x:Name="textBoxTranslated" Text="translated" />
                 </Grid>
+                </StackPanel>
                     
                 <!--Article-->
                 <RichTextBox Grid.Row="1" Margin="0,0,0,0" x:Name="articleRichTextBox" ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="True" SelectionOpacity="0" Cursor="Cross"

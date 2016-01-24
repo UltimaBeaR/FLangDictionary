@@ -1,5 +1,7 @@
-﻿using FLangDictionary.Logic;
+﻿using System;
+using FLangDictionary.Logic;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace FLangDictionary.Data
@@ -119,6 +121,40 @@ namespace FLangDictionary.Data
 
             // Создаем текущий текст перевода
             CurrentArtisticalTranslation = new TextInLanguage(languageCode, finishedText.text, finishedText.finished);
+        }
+
+        // Добавляет/Меняет/Удаляет еденицу перевода. Удаление идет в случае если поле перевода = null, а также поля оригинала и перевода в инфинитиве.
+        // Добавление идет, если такой еденицы еще нет, в другом случае - изменение.
+        public void ModifyTranslationUnit(TranslationUnit translationUnit, string languageCode)
+        {
+            Debug.Assert(translationUnit != null && translationUnit.OriginalPhrase != null);
+
+            // Перевод в инфинитиве должен быть либо не задан полностью либо полностью задан
+            Debug.Assert(
+                (translationUnit.infinitiveTranslation.originalPhrase == null && translationUnit.infinitiveTranslation.translatedPhrase == null) ||
+                (translationUnit.infinitiveTranslation.originalPhrase != null && translationUnit.infinitiveTranslation.translatedPhrase != null));
+
+            // Получаем оригинальную фразу в виде строки с индексами (Это данные, которые будет сохранять БД)
+            string phraseIndexes = TextInLanguage.GetPhraseIndexes(translationUnit.OriginalPhrase);
+
+            if (translationUnit.translatedPhrase != null || translationUnit.infinitiveTranslation.originalPhrase != null)
+            {
+                // Какие-то поля заданы - значит добавляем либо модифицируем эту еденицу перевода
+
+                WorkspaceRepository.RawTranslationUnit rawTranslationUnit = new WorkspaceRepository.RawTranslationUnit();
+                rawTranslationUnit.originalPhraseIndexes = phraseIndexes;
+                rawTranslationUnit.translatedPhrase = translationUnit.translatedPhrase == null ? string.Empty : translationUnit.translatedPhrase;
+                rawTranslationUnit.infinitiveOriginalPhrase = translationUnit.infinitiveTranslation.originalPhrase;
+                rawTranslationUnit.infinitiveTranslatedPhrase = translationUnit.infinitiveTranslation.translatedPhrase;
+
+                m_repository.AddOrChangeTranslationUnit(Name, languageCode, rawTranslationUnit);
+            }
+            else
+            {
+                // Ни одно поле не задано - значит удаляем эту еденицу перевода (в случае, если такой еденицы перевода нет - то просто ничего не произойдет)
+
+                m_repository.RemoveTranslationUnitIfExists(Name, languageCode, phraseIndexes);
+            }
         }
     }
 }

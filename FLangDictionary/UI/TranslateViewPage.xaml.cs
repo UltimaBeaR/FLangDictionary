@@ -130,6 +130,28 @@ namespace FLangDictionary.UI
 
         private void test_Click(object sender, RoutedEventArgs e)
         {
+            Logic.TranslationUnit translationUnit = new Logic.TranslationUnit(m_selectedWords.ToArray());
+
+            translationUnit.translatedPhrase = textBoxTranslated.Text == string.Empty ? null : textBoxTranslated.Text;
+
+            if (textBoxOriginalInfinitive.Text == string.Empty || textBoxTranslatedInfinitive.Text == string.Empty)
+            {
+                translationUnit.infinitiveTranslation.originalPhrase = null;
+                translationUnit.infinitiveTranslation.translatedPhrase = null;
+            }
+            else
+            {
+                translationUnit.infinitiveTranslation.originalPhrase = textBoxOriginalInfinitive.Text;
+                translationUnit.infinitiveTranslation.translatedPhrase = textBoxTranslatedInfinitive.Text;
+            }
+
+            Global.CurrentWorkspace.CurrentArticle.ModifyTranslationUnit(translationUnit, Global.CurrentWorkspace.TranslationLanguages[0].Code);
+
+            // Test_OpenStarDict();
+        }
+
+        private void Test_OpenStarDict()
+        {
             var openFileDialog = new System.Windows.Forms.FolderBrowserDialog();
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 m_dict = new StarDict.StarDict(openFileDialog.SelectedPath);
@@ -261,7 +283,7 @@ namespace FLangDictionary.UI
         private void ClearSelectedWords()
         {
             m_selectedWords.Clear();
-            m_textBoxOriginal.Text = string.Empty;
+            textBoxOriginal.Text = string.Empty;
             StarDictFlowDocumentBuilder.Build(string.Empty, dictionaryFlowDocument, DictionaryTermReferenceMouseUp);
         }
 
@@ -292,7 +314,7 @@ namespace FLangDictionary.UI
                 foreach (var wordInSelection in m_selectedWords)
                     phraseAsString += wordInSelection.ToString() + (ReferenceEquals(wordInSelection, m_selectedWords[m_selectedWords.Count - 1]) ? string.Empty : " ");
 
-                m_textBoxOriginal.Text = phraseAsString;
+                textBoxOriginal.Text = phraseAsString;
 
                 if (m_dict != null)
                 {

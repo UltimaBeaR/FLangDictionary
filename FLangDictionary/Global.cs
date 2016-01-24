@@ -97,8 +97,10 @@ namespace FLangDictionary
         // Происходит при смене текущей статьи в текущей рабочей области
         // НЕ вызывается при изменениях текущей рабочей области
         public static event EventHandler CurrentArticleOpened;
-        // Происходит при смене текущей рабочей области
-        public static event EventHandler CurrentWorkspaceSet;
+        // Происходит непосредственно перед сменой текущей рабочей области (в данный момент текущей еще является старая рабочая область)
+        public static event EventHandler BeforeCurrentWorkspaceSet;
+        // Происходит сразу после смены текущей рабочей области (в данный момент текущей уже является новая рабочая область)
+        public static event EventHandler AfterCurrentWorkspaceSet;
         // Происходит при смене языка пользовательского интерфейса
         public static event EventHandler UILanguageChanged;
 
@@ -129,6 +131,10 @@ namespace FLangDictionary
 
             set
             {
+                // Вызываем обработчик ДО изменения текущей рабочей области
+                if (BeforeCurrentWorkspaceSet != null)
+                    BeforeCurrentWorkspaceSet(m_currentWorkspace, EventArgs.Empty);
+
                 // Если есть старая рабочая область, отпишемся от ее события изменения статьи
                 if (m_currentWorkspace != null)
                 {
@@ -145,8 +151,9 @@ namespace FLangDictionary
                     m_currentWorkspace.CurrentArticleOpened += CurrentWorkspace_CurrentArticleOpenedHandler;
                 }
 
-                if (CurrentWorkspaceSet != null)
-                    CurrentWorkspaceSet(m_currentWorkspace, EventArgs.Empty);
+                // Вызываем обработчик ПОСЛЕ изменения текущей рабочей области
+                if (AfterCurrentWorkspaceSet != null)
+                    AfterCurrentWorkspaceSet(m_currentWorkspace, EventArgs.Empty);
             }
         }
 

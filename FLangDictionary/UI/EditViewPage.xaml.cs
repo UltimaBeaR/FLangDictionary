@@ -70,7 +70,7 @@ namespace FLangDictionary.UI
         // Используется в моменты смены вида, выхода из приложения и т.д.
         public void SaveCurrentState()
         {
-            if (Global.CurrentWorkspace.CurrentArticle != null)
+            if (Global.CurrentWorkspace != null && Global.CurrentWorkspace.CurrentArticle != null)
             {
                 if (!Global.CurrentWorkspace.CurrentArticle.OriginalText.Finished)
                 {
@@ -83,6 +83,7 @@ namespace FLangDictionary.UI
         private void ShutdownHandler()
         {
             m_window.Closed -= MainWindow_Closed;
+            Global.BeforeCurrentWorkspaceSet -= Global_BeforeCurrentWorkspaceSet;
             Global.CurrentArticleOpening -= CurrentArticleOpeningHandler;
             Global.CurrentArticleOpened -= CurrentArticleOpenedHandler;
             Global.UILanguageChanged -= Global_UILanguageChanged;
@@ -112,6 +113,7 @@ namespace FLangDictionary.UI
             m_window = Window.GetWindow(this);
             m_window.Closed += MainWindow_Closed;
 
+            Global.BeforeCurrentWorkspaceSet += Global_BeforeCurrentWorkspaceSet;
             Global.CurrentArticleOpening += CurrentArticleOpeningHandler;
             Global.CurrentArticleOpened += CurrentArticleOpenedHandler;
             Global.UILanguageChanged += Global_UILanguageChanged;
@@ -126,6 +128,11 @@ namespace FLangDictionary.UI
             }
 
             UpdateVisuals();
+        }
+
+        private void Global_BeforeCurrentWorkspaceSet(object sender, EventArgs e)
+        {
+            SaveCurrentState();
         }
 
         private void Global_UILanguageChanged(object sender, EventArgs e)

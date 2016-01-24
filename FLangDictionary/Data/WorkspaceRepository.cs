@@ -53,6 +53,39 @@ namespace FLangDictionary.Data
             }
         }
 
+        // Выполняет запрос, и в случае если это был INSERT, возвратит rowid добавленной записи
+        private int ExecuteSQLQuery(string query, out int lastInsertedRowId)
+        {
+            using (var connection = new SqliteConnection($"Data Source={m_fileName}"))
+            {
+                connection.Open();
+
+                int rowCount;
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = query;
+                    rowCount = command.ExecuteNonQuery();
+                }
+
+                // Получаем rowid последней добавленной записи. Важно чтобы он был в пределах того же соединения
+                // что и INSERT запрос (который предположительно идет прямо перед этим), иначе всегда возвращается 0
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT last_insert_rowid();";
+                    using (var reader = command.ExecuteReader())
+                    {
+                        Debug.Assert(reader.HasRows);
+                        reader.Read();
+                        lastInsertedRowId = reader.GetInt32(0);
+                    }
+                }
+
+                connection.Close();
+
+                return rowCount;
+            }
+        }
+
         private int ExecuteSQLQuery(string query)
         {
             using (var connection = new SqliteConnection($"Data Source={m_fileName}"))
@@ -462,13 +495,158 @@ namespace FLangDictionary.Data
         }
 
         // Подзапрос для получения id статьи из ее имени
-        private string ArticleIdByNameSubquery(string articleName)
+        // Если задаются insertionValuesBefore или insertionValuesAfter (даже если задан пробел), то подзапрос генерируется для 2ой части INSERT запроса
+        private string ArticleIdByNameSubquery(string articleName, string insertionValuesBefore = null, string insertionValuesAfter = null)
         {
-            return $"(SELECT {Tables.Articles.id} FROM {Tables.articles} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)})";
+            bool insertionSyntax = false;
+
+            if (insertionValuesBefore == null)
+                insertionValuesBefore = string.Empty;
+            else
+            {
+                insertionSyntax = true;
+                insertionValuesBefore = insertionValuesBefore + ", ";
+            }
+
+            if (insertionValuesAfter == null)
+                insertionValuesAfter = string.Empty;
+            else
+            {
+                insertionSyntax = true;
+                insertionValuesAfter = ", " + insertionValuesAfter;
+            }
+
+            string query = $"SELECT {insertionValuesBefore}{Tables.Articles.id}{insertionValuesAfter} FROM {Tables.articles} WHERE {Tables.Articles.name} = {SQLStringLiteral(articleName)}";
+
+            return insertionSyntax ? query : $"({query})";
         }
 
-        // ToDo: GetTranslationUnits() полностью рабочий. null обрабатывает в Tables.TranslationUnits.infinitiveTranslationId.
-        // Конвертация из сырых TranslationUnit в нормальные тоже норм. Остается сделать такой же метод для записи в базу и проверить все это дело и можно идти дальше
+        // Записывает перевод фразы в инфинитиве и возвращает его id, либо, в случае если точно такой же перевод уже есть, просто вернет его id
+        private int GetOrAddTranslationInInfinitive(string originalPhrase, string translationLanguageCode, string translatedPhrase)
+        {
+            Debug.Assert(originalPhrase != null && translationLanguageCode != null && translatedPhrase != null);
+
+            int foundId = -1;
+
+            ExecuteSQLQuery
+            (
+                $"SELECT {Tables.TranslationsInInfinitive.id} FROM {Tables.translationsInInfinitive} WHERE " +
+                $"{Tables.TranslationsInInfinitive.originalPhrase} = {SQLStringLiteral(originalPhrase)} and " +
+                $"{Tables.TranslationsInInfinitive.translationLanguageCode} = {SQLStringLiteral(translationLanguageCode)} and " +
+                $"{Tables.TranslationsInInfinitive.translatedPhrase} = {SQLStringLiteral(translatedPhrase)} LIMIT 1;",
+
+                (reader) =>
+                {
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        foundId = reader.GetInt32(0);
+                    }
+                }
+            );
+
+            // Если нашли Id, значит такая запись уже есть - возвращаем Id
+            if (foundId != -1)
+                return foundId;
+
+            // Если же нет такого Id, то добавляем новую запись и возвращаем полученный Id
+
+            int lastRowId;
+            ExecuteSQLQuery($"INSERT INTO {Tables.translationsInInfinitive} VALUES " +
+                $"(NULL, {SQLStringLiteral(originalPhrase)}, {SQLStringLiteral(translationLanguageCode)}, {SQLStringLiteral(translatedPhrase)});", out lastRowId);
+
+            ExecuteSQLQuery
+            (
+                $"SELECT {Tables.TranslationsInInfinitive.id} FROM {Tables.translationsInInfinitive} WHERE " +
+                $"[rowid] = {lastRowId} LIMIT 1;",
+
+                (reader) =>
+                {
+                    Debug.Assert(reader.HasRows);
+
+                    reader.Read();
+                    foundId = reader.GetInt32(0);
+                }
+            );
+
+            return foundId;
+        }
+
+        // Добавляет еденицу перевода. Если слово в инфинитиве не существует в словаре, то оно также добавляется в этот словарь
+        public void AddOrChangeTranslationUnit(string articleName, string translationLanguageCode, RawTranslationUnit translationUnit)
+        {
+            Debug.Assert(articleName != null && translationLanguageCode != null && translationUnit.originalPhraseIndexes != null && translationUnit.translatedPhrase != null);
+
+            // Если задан перевод в инфинитиве, получаем его Id (при этом либо добавится новый перевод либо возьмется уже существующий)
+            int translationInInfinitiveId = -1;
+            if (translationUnit.infinitiveOriginalPhrase != null && translationUnit.infinitiveTranslatedPhrase != null)
+                translationInInfinitiveId = GetOrAddTranslationInInfinitive(translationUnit.infinitiveOriginalPhrase, translationLanguageCode, translationUnit.infinitiveTranslatedPhrase);
+
+            // Запрашиваем Id оригинальной фразы (ее индексы слов), дабы узнать есть ли уже такая еденица перевода в БД
+
+            int translationUnitId = -1;
+            ExecuteSQLQuery
+            (
+                $"SELECT {Tables.TranslationUnits.id} FROM {Tables.translationUnits} " +
+                $"WHERE {Tables.TranslationUnits.articleId} = {ArticleIdByNameSubquery(articleName)} and " +
+                $"{Tables.TranslationUnits.translationLanguageCode} = {SQLStringLiteral(translationLanguageCode)} and " +
+                $"{Tables.TranslationUnits.originalPhraseIndexes} = {SQLStringLiteral(translationUnit.originalPhraseIndexes)} LIMIT 1;",
+
+                (reader) =>
+                {
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        translationUnitId = reader.GetInt32(0);
+                    }
+                }
+            );
+
+            // Если такая еденица перевода уже есть - модифицируем ее, иначе добавляем новую
+
+            string translationInInfinitiveIdAsString = translationInInfinitiveId == -1 ? "NULL" : translationInInfinitiveId.ToString();
+
+            if (translationUnitId == -1)
+            {
+                // Если нужно добавлять новую еденицу перевода
+
+                // Формируем строку со значениями
+                string insertionData =
+                    SQLStringLiteral(translationUnit.originalPhraseIndexes) + ", " +
+                    SQLStringLiteral(translationLanguageCode) + ", " +
+                    SQLStringLiteral(translationUnit.translatedPhrase) + ", " +
+                    translationInInfinitiveIdAsString;
+
+                // Добавляем еденицу перевода
+                ExecuteSQLQuery($"INSERT INTO {Tables.translationUnits} {ArticleIdByNameSubquery(articleName, "NULL", insertionData)};");
+            }
+            else
+            {
+                // Если нужно изменить уже существующую еденицу перевода
+
+                ExecuteSQLQuery
+                (
+                    $"UPDATE {Tables.translationUnits} SET " +
+                    $"{Tables.TranslationUnits.translatedPhrase} = {SQLStringLiteral(translationUnit.translatedPhrase)}, " +
+                    $"{Tables.TranslationUnits.infinitiveTranslationId} = {translationInInfinitiveIdAsString} " +
+                    $"WHERE {Tables.TranslationUnits.articleId} = {ArticleIdByNameSubquery(articleName)} and " +
+                    $"{Tables.TranslationUnits.translationLanguageCode} = {SQLStringLiteral(translationLanguageCode)} and " +
+                    $"{Tables.TranslationUnits.originalPhraseIndexes} = {SQLStringLiteral(translationUnit.originalPhraseIndexes)};"
+                );
+            }
+        }
+
+        // Удаляет заданную еденицу перевода, в случае, если она существует
+        public void RemoveTranslationUnitIfExists(string articleName, string translationLanguageCode, string originalPhraseIndexes)
+        {
+            ExecuteSQLQuery
+            (
+                $"DELETE FROM {Tables.translationUnits} WHERE " +
+                $"{Tables.TranslationUnits.articleId} = {ArticleIdByNameSubquery(articleName)} and " +
+                $"{Tables.TranslationUnits.translationLanguageCode} = {SQLStringLiteral(translationLanguageCode)} and " +
+                $"{Tables.TranslationUnits.originalPhraseIndexes} = {SQLStringLiteral(originalPhraseIndexes)};"
+            );
+        }
 
         // Получает набор едениц перевода для заданного языка в заданной статье
         public RawTranslationUnit[] GetTranslationUnits(string articleName, string translationLanguageCode)
