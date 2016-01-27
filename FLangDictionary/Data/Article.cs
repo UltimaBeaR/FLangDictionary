@@ -127,12 +127,17 @@ namespace FLangDictionary.Data
         // Добавление идет, если такой еденицы еще нет, в другом случае - изменение.
         public void ModifyTranslationUnit(TranslationUnit translationUnit, string languageCode)
         {
-            Debug.Assert(translationUnit != null && translationUnit.OriginalPhrase != null);
+            Debug.Assert(translationUnit != null && translationUnit.OriginalPhrase != null && m_translationUnits.ContainsKey(languageCode));
 
             // Перевод в инфинитиве должен быть либо не задан полностью либо полностью задан
             Debug.Assert(
                 (translationUnit.infinitiveTranslation.originalPhrase == null && translationUnit.infinitiveTranslation.translatedPhrase == null) ||
                 (translationUnit.infinitiveTranslation.originalPhrase != null && translationUnit.infinitiveTranslation.translatedPhrase != null));
+
+            // Получаем список едениц перевода для данного языка (который также будет изменен, чтобы не лезть лишний раз в базу и не синхронизировать)
+            List<TranslationUnit> translationLanguageUnits = m_translationUnits[languageCode];
+            // Находим заданный элемент в текущем списке едениц перевода, если он там есть
+            int foundIndex = translationLanguageUnits.FindIndex(trUnit => trUnit.OriginalPhrase.SequenceEqual(translationUnit.OriginalPhrase));
 
             // Получаем оригинальную фразу в виде строки с индексами (Это данные, которые будет сохранять БД)
             string phraseIndexes = TextInLanguage.GetPhraseIndexes(translationUnit.OriginalPhrase);
@@ -148,13 +153,69 @@ namespace FLangDictionary.Data
                 rawTranslationUnit.infinitiveTranslatedPhrase = translationUnit.infinitiveTranslation.translatedPhrase;
 
                 m_repository.AddOrChangeTranslationUnit(Name, languageCode, rawTranslationUnit);
+
+                // Обновляем локальный список
+                if (foundIndex == -1)
+                    translationLanguageUnits.Add(translationUnit);
+                else
+                    translationLanguageUnits[foundIndex] = translationUnit;
             }
             else
             {
                 // Ни одно поле не задано - значит удаляем эту еденицу перевода (в случае, если такой еденицы перевода нет - то просто ничего не произойдет)
 
                 m_repository.RemoveTranslationUnitIfExists(Name, languageCode, phraseIndexes);
+
+                // Обновляем локальный список
+                if (foundIndex != -1)
+                    translationLanguageUnits.RemoveAt(foundIndex);
             }
+        }
+
+        // По заданному языку перевода и выбранному списку слов получает translation unit, соответсвующий этому выбранному списку и фразу, в состав которой входит этот список слов
+        // selection и phrase могут быть = null, в случае если передается вся фраза, то фраза будет = null
+        public void GetTranslationUnits(string languageCode, TextInLanguage.SyntaxLayout.Word[] selectedWords, out TranslationUnit selection, out TranslationUnit phrase)
+        {
+            Debug.Assert(selectedWords != null && selectedWords.Length > 0);
+
+            // Получаем для заданного языка все еденицы перевода
+            List<TranslationUnit> translationLanguageUnits;
+            bool languageExists = m_translationUnits.TryGetValue(languageCode, out translationLanguageUnits);
+            Debug.Assert(languageExists);
+
+            selection = null;
+            phrase = null;
+
+            // Пробегаем все еденицы перевода для заданного языка
+            foreach (TranslationUnit translationUnit in translationLanguageUnits)
+            {
+                if (selectedWords[0].FirstIndex >= translationUnit.OriginalPhrase[0].FirstIndex &&
+                    selectedWords[selectedWords.Length - 1].LastIndex <= translationUnit.OriginalPhrase[translationUnit.OriginalPhrase.Length - 1].LastIndex)
+                {
+                    // Если translationUnit содержит выбранный список слов
+
+                    int selectedWordsIdx = 0;
+                    for (int translationUnitWordIdx = 0; translationUnitWordIdx < translationUnit.OriginalPhrase.Length; translationUnitWordIdx++)
+                    {
+                        if (selectedWords[selectedWordsIdx] == translationUnit.OriginalPhrase[translationUnitWordIdx])
+                            selectedWordsIdx++;
+
+                        if (selectedWordsIdx == selectedWords.Length)
+                            break;
+                    }
+
+                    if (selectedWordsIdx == selectedWords.Length)
+                    {
+                        if (selectedWords.Length == translationUnit.OriginalPhrase.Length)
+                            selection = translationUnit;
+                        else
+                            phrase = translationUnit;
+
+                        if (selection != null && phrase != null)
+                            return;
+                    }
+                }
+            }            
         }
     }
 }

@@ -316,6 +316,31 @@ namespace FLangDictionary.UI
 
                 textBoxOriginal.Text = phraseAsString;
 
+
+                Logic.TranslationUnit selectedTranslationUnit;
+                Logic.TranslationUnit phraseTranslationUnit;
+
+
+                // ToDo: тест. временно берем тупо первый язык в списке. надо брать из выпадающего списка (если языков вообще нет то эта функция не должна была вызваться)
+                Global.CurrentWorkspace.CurrentArticle.GetTranslationUnits(Global.CurrentWorkspace.TranslationLanguages[0].Code, m_selectedWords.ToArray(), out selectedTranslationUnit, out phraseTranslationUnit);
+
+                if (selectedTranslationUnit != null)
+                {
+                    textBoxTranslated.Text = selectedTranslationUnit.translatedPhrase;
+                    textBoxOriginalInfinitive.Text = selectedTranslationUnit.infinitiveTranslation.originalPhrase;
+                    textBoxTranslatedInfinitive.Text = selectedTranslationUnit.infinitiveTranslation.translatedPhrase;
+                }
+                else
+                {
+                    textBoxTranslated.Text = textBoxOriginalInfinitive.Text = textBoxTranslatedInfinitive.Text = null;
+                }
+
+                if (phraseTranslationUnit != null)
+                {
+                    MessageBox.Show(phraseTranslationUnit.translatedPhrase);
+                }
+
+
                 if (m_dict != null)
                 {
                     string translation = m_dict.LookupWord(phraseAsString);
