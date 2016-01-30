@@ -42,6 +42,7 @@ namespace FLangDictionary.Data
             CurrentArtisticalTranslation = null;
 
             UpdateTranslationUnits();
+
         }
 
         // Обновление текущих едениц перевода
@@ -174,9 +175,26 @@ namespace FLangDictionary.Data
 
         // По заданному языку перевода и выбранному списку слов получает translation unit, соответсвующий этому выбранному списку и фразу, в состав которой входит этот список слов
         // selection и phrase могут быть = null, в случае если передается вся фраза, то фраза будет = null
-        public void GetTranslationUnits(string languageCode, TextInLanguage.SyntaxLayout.Word[] selectedWords, out TranslationUnit selection, out TranslationUnit phrase)
+        // canEditSelection - показывает можно ли переданный список выделенных слов редактировать в редакторе, wrongWords содержит список неправильных слов,
+        // которые в редакторе нужно подсвечивать отдельно. Неправильные слова - это слова у которых есть фраза при условии что остальные выделенные слова имеют другую фразу (или не имеют фразы вобще)
+        /*public void GetSelectedWordsInfo(string languageCode, TextInLanguage.SyntaxLayout.Word[] selectedWords,
+            out bool canEditSelection, out TranslationUnit selection, out TranslationUnit phrase, out TextInLanguage.SyntaxLayout.Word[] wrongWords)
         {
             Debug.Assert(selectedWords != null && selectedWords.Length > 0);
+
+
+
+            // Можно редактировать
+            // 1) Если список выделения содержит только 1 слово
+            // 2) Если selection не равно null (то есть если уже есть перевод на фразу составную или одинарную то можно его модифицировать)
+            // 3) Если ни одно слово в списке не входит ни в один из имеющихся в статье translation unit-ов, то есть это будет новый перевод фразы
+            canEditSelection = false;
+
+            // Тут список слов, которые находятся внутри translation-unit-ов статьи, и при этом эти translation unit-ы имеют более 1го оригинального слова
+            // при этом список = null, если вся 
+            wrongWords = null;
+
+
 
             // Получаем для заданного языка все еденицы перевода
             List<TranslationUnit> translationLanguageUnits;
@@ -216,6 +234,74 @@ namespace FLangDictionary.Data
                     }
                 }
             }            
+        }*/
+
+
+
+
+
+        // Получает перевод (если таковой есть) для заданного слова. То есть перевод самого слова, без фразы
+        public TranslationUnit GetTranslation(string languageCode, TextInLanguage.SyntaxLayout.Word word)
+        {
+            // Получаем для заданного языка все еденицы перевода
+            List<TranslationUnit> translationLanguageUnits;
+            bool languageExists = m_translationUnits.TryGetValue(languageCode, out translationLanguageUnits);
+            Debug.Assert(languageExists);
+
+            // Пробегаем все еденицы перевода для заданного языка
+            foreach (TranslationUnit translationUnit in translationLanguageUnits)
+            {
+                // Возвратим перевод если он состоит из 1го слова и это слово совпадает с заданным
+                if (translationUnit.OriginalPhrase.Length == 1 && translationUnit.OriginalPhrase[0].Equals(word))
+                    return translationUnit;
+            }
+
+            return null;
+        }
+
+        // Получает перевод (если таковой есть) для фразы, в которой содержится заданное слово. Так как фраза для слова может быть
+        // Только одна то тут либо будет ее перевод либо будет null, в случае если фразы у этого слова нет
+        public TranslationUnit GetPhraseTranslation(string languageCode, TextInLanguage.SyntaxLayout.Word wordInPhrase)
+        {
+            // Получаем для заданного языка все еденицы перевода
+            List<TranslationUnit> translationLanguageUnits;
+            bool languageExists = m_translationUnits.TryGetValue(languageCode, out translationLanguageUnits);
+            Debug.Assert(languageExists);
+
+            // Пробегаем все еденицы перевода для заданного языка
+            foreach (TranslationUnit translationUnit in translationLanguageUnits)
+            {
+                // Возвратим перевод если перевод идет для фразы (более 1го слова) и перевод содержит заданное слово
+                if (translationUnit.OriginalPhrase.Length > 1 &&
+                    wordInPhrase.FirstIndex >= translationUnit.OriginalPhrase[0].FirstIndex &&
+                    wordInPhrase.LastIndex <= translationUnit.OriginalPhrase[translationUnit.OriginalPhrase.Length - 1].LastIndex &&
+                    translationUnit.OriginalPhrase.Contains(wordInPhrase))
+                {
+                    return translationUnit;
+                }
+            }
+
+            return null;
+        }
+
+        // Для заданного языка получает список слов, для которых есть перевод (перевод фраз роли не играет)
+        public void GetWordsWithOwnTranslationList(string languageCode, List<TextInLanguage.SyntaxLayout.Word> list)
+        {
+            Debug.Assert(list != null);
+
+            // Получаем для заданного языка все еденицы перевода
+            List<TranslationUnit> translationLanguageUnits;
+            bool languageExists = m_translationUnits.TryGetValue(languageCode, out translationLanguageUnits);
+            Debug.Assert(languageExists);
+
+            list.Clear();
+
+            // Пробегаем все еденицы перевода для заданного языка
+            foreach (TranslationUnit translationUnit in translationLanguageUnits)
+            {
+                if (translationUnit.OriginalPhrase.Length == 1)
+                    list.Add(translationUnit.OriginalPhrase[0]);
+            }
         }
     }
 }

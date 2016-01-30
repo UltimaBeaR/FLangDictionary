@@ -32,27 +32,60 @@ namespace FLangDictionary.UI
         Paragraph m_articleParagraph;
         // Словарь для просмотра перевода слов и словосочетаний. Если null, значит еще не загружен
         StarDict.StarDict m_dict;
+        
+        
         // Список выбранных слов через клик по слову либо клик по слову с зажатием CTRL для мультивыбора
         // В этом списке слова будут идти не в порядке выбора а в порядке следования в тексте статьи
         List<Logic.TextInLanguage.SyntaxLayout.Word> m_selectedWords;
+        // Список слов, которые не выделенны, но составляют фразу вместе с выделенными словами, должны подсвечиваться
+        List<Logic.TextInLanguage.SyntaxLayout.Word> m_unselectedPhraseWords;
+        // Список неправильных слов - когда выделены слова из различных фраз - тут будут эти слова, за исключением слов у которых нет ни одной фразы
+        List<Logic.TextInLanguage.SyntaxLayout.Word> m_wrongWords;
+        // Список слов, для которых существует перевод (фразы не считаются)
+        List<Logic.TextInLanguage.SyntaxLayout.Word> m_translatedWords;
+
         // Слово в статье, над которым был произведен MouseDown. Нужен для правильной обработки клика по MouseUp
         Logic.TextInLanguage.SyntaxLayout.Word m_articleMouseLeftButtonDownWord;
         // Последняя позиция мыши при движении над параграфом. Нужно для безглючной работы
         Point m_paragraphMouseMoveLastPos;
 
+        private Color m_textColorBackRight = Color.FromRgb(192, 245, 192);
+        private Color m_textColorBackRightHover = Color.FromRgb(137, 237, 137);
+        private Color m_textColorBackWrong = Color.FromRgb(247, 185, 174);
+        private Color m_textColorBackWrongHover = Color.FromRgb(240, 134, 115);
+        private Color m_textColorUnselectedPhrase = Color.FromRgb(69, 185, 214);
+        private Color m_textColorBackUnselectedPhraseHover = Color.FromRgb(196, 233, 242);
+        private Color m_textColorBackSentence = Colors.LightYellow;
+        private Color m_textColorBackHover = Colors.Bisque;
+        private Color m_textColorTranslated = Colors.DarkBlue;
+
         // Обновляет состояние выделений (форматом) текста в статье
         private void UpdateArticleVisualSelection(Logic.TextInLanguage.SyntaxLayout.Word mouseOverWord)
         {
-            int selectionCount = m_selectedWords.Count + (mouseOverWord == null ? 0 : 2);
-
-            if (selectionCount == 0)
-            {
-                FlowDocumentFormatter.SetTextVisualSelections(m_articleParagraph);
-                return;
-            }
+            // Вычисляем сколько будет заданно различных выделений. Это нужно для того чтобы задать точный capacity, но если не совпадет - пофиг
+            int selectionCount = m_translatedWords.Count + m_selectedWords.Count + m_unselectedPhraseWords.Count + m_wrongWords.Count + (mouseOverWord == null ? 0 : 2);
 
             List<FlowDocumentFormatter.Selection> selections = new List<FlowDocumentFormatter.Selection>(selectionCount);
 
+            // Подсвечиваем переведенные слова
+            for (int i = 0; i < m_translatedWords.Count; i++)
+            {
+                selections.Add(new FlowDocumentFormatter.Selection()
+                {
+                    fontColor = m_textColorTranslated,
+                    fontFamily = this.FontFamily,
+                    fontSize = articleFontSize,
+                    range = new FlowDocumentFormatter.Selection.Range()
+                    {
+                        firstIndex = m_translatedWords[i].FirstIndex,
+                        lastIndex = m_translatedWords[i].LastIndex
+                    },
+                    backgroundColor = Colors.White,
+                    priority = 0
+                });
+            }
+
+            // Подсвечиваем выделенные слова
             for (int i = 0; i < m_selectedWords.Count; i++)
             {
                 selections.Add(new FlowDocumentFormatter.Selection()
@@ -65,14 +98,59 @@ namespace FLangDictionary.UI
                         firstIndex = m_selectedWords[i].FirstIndex,
                         lastIndex = m_selectedWords[i].LastIndex
                     },
-                    backgroundColor = Colors.LightGreen,
-                    priority = 1
+                    backgroundColor = m_textColorBackRight,
+                    priority = 2
                 });
             }
 
+            // Подсвечиваем слова из фразы, которые не присутсвуют в выделении
+            for (int i = 0; i < m_unselectedPhraseWords.Count; i++)
+            {
+                selections.Add(new FlowDocumentFormatter.Selection()
+                {
+                    fontColor = m_textColorUnselectedPhrase,
+                    fontFamily = this.FontFamily,
+                    fontSize = articleFontSize,
+                    range = new FlowDocumentFormatter.Selection.Range()
+                    {
+                        firstIndex = m_unselectedPhraseWords[i].FirstIndex,
+                        lastIndex = m_unselectedPhraseWords[i].LastIndex
+                    },
+                    backgroundColor = Colors.White,
+                    priority = 2
+                });
+            }
+
+            // Подсвечиваем "неправильные" слова
+            for (int i = 0; i < m_wrongWords.Count; i++)
+            {
+                selections.Add(new FlowDocumentFormatter.Selection()
+                {
+                    fontColor = Colors.Black,
+                    fontFamily = this.FontFamily,
+                    fontSize = articleFontSize,
+                    range = new FlowDocumentFormatter.Selection.Range()
+                    {
+                        firstIndex = m_wrongWords[i].FirstIndex,
+                        lastIndex = m_wrongWords[i].LastIndex
+                    },
+                    backgroundColor = m_textColorBackWrong,
+                    priority = 3
+                });
+            }
+
+            // Если курсор находится над каким либо словом
             if (mouseOverWord != null)
             {
-                bool mouseOverWordSelected = m_selectedWords.Contains(mouseOverWord);
+                // Подсвечиваем слово, надо которым сейчас курсор
+
+                Color hoverWordColor = m_textColorBackHover;
+                if (m_wrongWords.Contains(mouseOverWord))
+                    hoverWordColor = m_textColorBackWrongHover;
+                else if (m_unselectedPhraseWords.Contains(mouseOverWord))
+                    hoverWordColor = m_textColorBackUnselectedPhraseHover;
+                else if (m_selectedWords.Contains(mouseOverWord))
+                    hoverWordColor = m_textColorBackRightHover;
 
                 selections.Add(new FlowDocumentFormatter.Selection()
                 {
@@ -84,9 +162,11 @@ namespace FLangDictionary.UI
                         firstIndex = mouseOverWord.FirstIndex,
                         lastIndex = mouseOverWord.LastIndex
                     },
-                    backgroundColor = mouseOverWordSelected ? Colors.LightBlue : Colors.Bisque,
-                    priority = 2
+                    backgroundColor = hoverWordColor,
+                    priority = 4
                 });
+
+                // Подсвечиваем предложение
 
                 selections.Add(new FlowDocumentFormatter.Selection()
                 {
@@ -98,8 +178,8 @@ namespace FLangDictionary.UI
                         firstIndex = mouseOverWord.Sentence.FirstIndex,
                         lastIndex = mouseOverWord.Sentence.LastIndex
                     },
-                    backgroundColor = Colors.LightYellow,
-                    priority = 0
+                    backgroundColor = m_textColorBackSentence,
+                    priority = 1
                 });
             }
 
@@ -109,8 +189,15 @@ namespace FLangDictionary.UI
         // Обновляет текущее визуальное представление в соответсвии с информацией из модели(бд)
         private void UpdateVisuals()
         {
+            // ToDo: тест. временно берем тупо первый язык в списке. надо брать из выпадающего списка (если языков вообще нет то эта функция не должна была вызываться)
+            string selectedTranslationLanguageCode = Global.CurrentWorkspace.TranslationLanguages[0].Code;
+
             m_articleParagraph.Inlines.Clear();
             m_articleParagraph.Inlines.Add(Global.CurrentWorkspace.CurrentArticle.OriginalText.Text);
+
+            Global.CurrentWorkspace.CurrentArticle.GetWordsWithOwnTranslationList(selectedTranslationLanguageCode, m_translatedWords);
+
+            UpdateArticleVisualSelection(null);
         }
 
         public TranslateViewPage()
@@ -118,6 +205,9 @@ namespace FLangDictionary.UI
             InitializeComponent();
 
             m_selectedWords = new List<Logic.TextInLanguage.SyntaxLayout.Word>();
+            m_unselectedPhraseWords = new List<Logic.TextInLanguage.SyntaxLayout.Word>();
+            m_wrongWords = new List<Logic.TextInLanguage.SyntaxLayout.Word>();
+            m_translatedWords = new List<Logic.TextInLanguage.SyntaxLayout.Word>();
 
             m_articleParagraph = articleRichTextBox.Document.Blocks.FirstBlock as Paragraph;
         }
@@ -283,8 +373,10 @@ namespace FLangDictionary.UI
         private void ClearSelectedWords()
         {
             m_selectedWords.Clear();
-            textBoxOriginal.Text = string.Empty;
-            StarDictFlowDocumentBuilder.Build(string.Empty, dictionaryFlowDocument, DictionaryTermReferenceMouseUp);
+            OnSelectedWordsChange();
+
+            //textBoxOriginal.Text = string.Empty;
+            //StarDictFlowDocumentBuilder.Build(string.Empty, dictionaryFlowDocument, DictionaryTermReferenceMouseUp);
         }
 
         public void SelectWord(Logic.TextInLanguage.SyntaxLayout.Word word, bool multiSelect)
@@ -307,7 +399,9 @@ namespace FLangDictionary.UI
                     m_selectedWords.Remove(word);
             }
 
-            if (m_selectedWords.Count > 0)
+            OnSelectedWordsChange();
+
+            /*if (m_selectedWords.Count > 0)
             {
 
                 string phraseAsString = string.Empty;
@@ -321,8 +415,25 @@ namespace FLangDictionary.UI
                 Logic.TranslationUnit phraseTranslationUnit;
 
 
+                bool canEditSelection;
+                Logic.TextInLanguage.SyntaxLayout.Word[] wrongWords;
+
                 // ToDo: тест. временно берем тупо первый язык в списке. надо брать из выпадающего списка (если языков вообще нет то эта функция не должна была вызваться)
-                Global.CurrentWorkspace.CurrentArticle.GetTranslationUnits(Global.CurrentWorkspace.TranslationLanguages[0].Code, m_selectedWords.ToArray(), out selectedTranslationUnit, out phraseTranslationUnit);
+                Global.CurrentWorkspace.CurrentArticle.GetSelectedWordsInfo(Global.CurrentWorkspace.TranslationLanguages[0].Code, m_selectedWords.ToArray(),
+                    out canEditSelection, out selectedTranslationUnit, out phraseTranslationUnit, out wrongWords);
+
+
+
+
+                string selectedStr = selectedTranslationUnit == null ? "null" : selectedTranslationUnit.OriginalPhrase.Length.ToString();
+                string phraseStr = phraseTranslationUnit == null ? "null" : phraseTranslationUnit.OriginalPhrase.Length.ToString();
+
+                MessageBox.Show($"{selectedStr}\n{phraseStr}");
+
+
+
+
+
 
                 if (selectedTranslationUnit != null)
                 {
@@ -340,7 +451,6 @@ namespace FLangDictionary.UI
                     MessageBox.Show(phraseTranslationUnit.translatedPhrase);
                 }
 
-
                 if (m_dict != null)
                 {
                     string translation = m_dict.LookupWord(phraseAsString);
@@ -348,7 +458,116 @@ namespace FLangDictionary.UI
                 }
             }
             else
-                ClearSelectedWords();
+                ClearSelectedWords();*/
+        }
+
+        // Устанавливает состояние для панели редактирования translation unit для выделенного слова/фразы
+        public void SetTranslationUnitAreaState(bool enabled, Logic.TranslationUnit translationUnit = null)
+        {
+            textBoxOriginalInfinitive.IsEnabled = textBoxTranslatedInfinitive.IsEnabled = textBoxOriginal.IsEnabled = textBoxTranslated.IsEnabled = enabled;
+
+            if (enabled)
+            {
+                if (translationUnit != null)
+                {
+                    textBoxOriginalInfinitive.Text = translationUnit.infinitiveTranslation.originalPhrase;
+                    textBoxTranslatedInfinitive.Text = translationUnit.infinitiveTranslation.translatedPhrase;
+                    textBoxTranslated.Text = translationUnit.translatedPhrase;
+                }
+                else
+                    textBoxOriginalInfinitive.Text = textBoxTranslatedInfinitive.Text = textBoxTranslated.Text = string.Empty;
+
+                StringBuilder selectedWordsAsString = new StringBuilder();
+                foreach (var wordInSelection in m_selectedWords)
+                {
+                    selectedWordsAsString.Append(wordInSelection.ToString());
+                    selectedWordsAsString.Append(ReferenceEquals(wordInSelection, m_selectedWords[m_selectedWords.Count - 1]) ? string.Empty : " ");
+                }
+
+                textBoxOriginal.Text = selectedWordsAsString.ToString();
+            }
+            else
+                textBoxOriginalInfinitive.Text = textBoxTranslatedInfinitive.Text = textBoxOriginal.Text = textBoxTranslated.Text = string.Empty;
+        }
+
+        // В m_unselectedPhraseWords прописывает заданные слова, но отфильтровывает в них текущие m_selectedWords
+        private void SetUnselectedPhraseWords(Logic.TextInLanguage.SyntaxLayout.Word[] phraseWords)
+        {
+            m_unselectedPhraseWords.Clear();
+
+            if (phraseWords != null && phraseWords.Length > 0)
+            {
+                foreach (var word in phraseWords)
+                {
+                    if (!m_selectedWords.Contains(word))
+                        m_unselectedPhraseWords.Add(word);
+                }
+            }
+        }
+
+        private void OnSelectedWordsChange()
+        {
+            // ToDo: тест. временно берем тупо первый язык в списке. надо брать из выпадающего списка (если языков вообще нет то эта функция не должна была вызываться)
+            string selectedTranslationLanguageCode = Global.CurrentWorkspace.TranslationLanguages[0].Code;
+
+            if (m_selectedWords.Count == 0)
+            {
+                SetTranslationUnitAreaState(false);
+                SetUnselectedPhraseWords(null);
+                m_wrongWords.Clear();
+
+            }
+            else if (m_selectedWords.Count == 1)
+            {
+                SetTranslationUnitAreaState(true, Global.CurrentWorkspace.CurrentArticle.GetTranslation(selectedTranslationLanguageCode, m_selectedWords[0]));
+                m_wrongWords.Clear();
+
+                var phraseTranslationUnit = Global.CurrentWorkspace.CurrentArticle.GetPhraseTranslation(selectedTranslationLanguageCode, m_selectedWords[0]);
+                SetUnselectedPhraseWords(phraseTranslationUnit == null ? null : phraseTranslationUnit.OriginalPhrase);
+            }
+            else
+            {
+                bool selectionHasSinglePhrase = true;
+
+                // Получаем фразу-перевод для каждого из выделенных слов
+                Logic.TranslationUnit[] phrasesForEachWordInSelection = new Logic.TranslationUnit[m_selectedWords.Count];
+                for (int i = 0; i < m_selectedWords.Count; i++)
+                {
+                    phrasesForEachWordInSelection[i] = Global.CurrentWorkspace.CurrentArticle.GetPhraseTranslation(selectedTranslationLanguageCode, m_selectedWords[i]);
+
+                    if (selectionHasSinglePhrase && i != 0 && phrasesForEachWordInSelection[i] != phrasesForEachWordInSelection[i - 1])
+                        selectionHasSinglePhrase = false;
+                }
+
+                m_wrongWords.Clear();
+
+                if (selectionHasSinglePhrase)
+                {
+                    var phraseTranslationUnit = phrasesForEachWordInSelection[0];
+
+                    if (phraseTranslationUnit == null || phraseTranslationUnit.OriginalPhrase.Length == m_selectedWords.Count)
+                    {
+                        SetTranslationUnitAreaState(true, phraseTranslationUnit);
+                        SetUnselectedPhraseWords(null);
+                    }
+                    else
+                    {
+                        SetTranslationUnitAreaState(false);
+                        SetUnselectedPhraseWords(phraseTranslationUnit.OriginalPhrase);
+                    }
+                }
+                else
+                {
+                    SetTranslationUnitAreaState(false);
+                    SetUnselectedPhraseWords(null);
+
+                    for (int i = 0; i < m_selectedWords.Count; i++)
+                    {
+                        if (phrasesForEachWordInSelection[i] != null)
+                            m_wrongWords.Add(m_selectedWords[i]);
+                    }
+                }
+            }
         }
 
         private void DictionaryTermReferenceMouseUp(object sender, MouseButtonEventArgs e)
