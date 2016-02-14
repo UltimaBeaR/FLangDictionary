@@ -40,6 +40,8 @@
             </MenuItem>
             <MenuItem Header="{DynamicResource Lang.Menu.Help}">
                 <MenuItem Header="{DynamicResource Lang.Menu.Help.About}" Click="MenuItem_Help_About_Click" />
+                <MenuItem Header="Экспорт текущей статьи в XML" Click="MenuItem_Help_ExportToXML_Click" />
+                <MenuItem Header="Импорт текущей статьи из XML" Click="MenuItem_Help_ImportFromXML_Click" />
             </MenuItem>
         </Menu>
         

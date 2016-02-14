@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -230,6 +231,22 @@ namespace FLangDictionary.UI
 
         private void MenuItem_Help_About_Click(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void MenuItem_Help_ExportToXML_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "XML|*.xml";
+            if (saveDialog.ShowDialog().Value)
+                Global.Debug_ExportCurrentArticleToXML(saveDialog.FileName);
+        }
+
+        private void MenuItem_Help_ImportFromXML_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openDialog = new OpenFileDialog();
+            openDialog.Filter = "XML|*.xml";
+            if (openDialog.ShowDialog().Value)
+                Global.Debug_ImportCurrentArticleFromXML(openDialog.FileName);
         }
     }
 }

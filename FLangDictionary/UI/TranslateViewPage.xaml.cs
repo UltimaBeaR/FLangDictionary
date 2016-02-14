@@ -59,6 +59,39 @@ namespace FLangDictionary.UI
         private Color m_textColorBackHover = Colors.Bisque;
         private Color m_textColorTranslated = Colors.DarkBlue;
 
+        private void UpdateLanguagesList(string languageCodeToSelect = null)
+        {
+            comboBoxTranslationLanguage.Items.Clear();
+
+
+            foreach (var language in Global.CurrentWorkspace.TranslationLanguages)
+            {
+                ListBoxItem itemToBeAdded = new ListBoxItem();
+                itemToBeAdded.Content = language.DisplayName;
+                itemToBeAdded.Tag = language;
+
+                comboBoxTranslationLanguage.Items.Add(itemToBeAdded);
+
+                if (language.Code == languageCodeToSelect)
+                    comboBoxTranslationLanguage.SelectedIndex = comboBoxTranslationLanguage.Items.Count - 1;
+            }
+
+            if (languageCodeToSelect == null)
+                comboBoxTranslationLanguage.SelectedIndex = comboBoxTranslationLanguage.Items.Count - 1;
+        }
+
+        // Возвращает выбранный пользователем язык
+        // Если ничего не выбрано - вернет null
+        private Logic.Languages.Language ChosenTranslationLanguage
+        {
+            get
+            {
+                if (comboBoxTranslationLanguage.SelectedItem == null)
+                    return null;
+                return (comboBoxTranslationLanguage.SelectedItem as ListBoxItem).Tag as Logic.Languages.Language;
+            }
+        }
+
         // Обновляет состояние выделений (форматом) текста в статье
         private void UpdateArticleVisualSelection(Logic.TextInLanguage.SyntaxLayout.Word mouseOverWord)
         {
@@ -189,13 +222,12 @@ namespace FLangDictionary.UI
         // Обновляет текущее визуальное представление в соответсвии с информацией из модели(бд)
         private void UpdateVisuals()
         {
-            // ToDo: тест. временно берем тупо первый язык в списке. надо брать из выпадающего списка (если языков вообще нет то эта функция не должна была вызываться)
-            string selectedTranslationLanguageCode = Global.CurrentWorkspace.TranslationLanguages[0].Code;
+            UpdateLanguagesList(null);
 
             m_articleParagraph.Inlines.Clear();
             m_articleParagraph.Inlines.Add(Global.CurrentWorkspace.CurrentArticle.OriginalText.Text);
 
-            Global.CurrentWorkspace.CurrentArticle.GetWordsWithOwnTranslationList(selectedTranslationLanguageCode, m_translatedWords);
+            Global.CurrentWorkspace.CurrentArticle.GetWordsWithOwnTranslationList(ChosenTranslationLanguage.Code, m_translatedWords);
 
             UpdateArticleVisualSelection(null);
         }
@@ -247,74 +279,6 @@ namespace FLangDictionary.UI
                 m_dict = new StarDict.StarDict(openFileDialog.SelectedPath);
         }
 
-        int GetTextIndexInParagraphFromPointer(TextPointer pointer)
-        {
-            if (pointer != null)
-            {
-                // Такой вот извращенный способ узнать индекс символа в строке
-                TextRange textRange = new TextRange(pointer.Paragraph.ContentStart, pointer);
-                return textRange.Text.Length;
-            }
-
-            return -1;
-        }
-
-        string GetWordFromPointer(TextPointer pointer)
-        {
-            string word;
-            int firstIndex;
-            int lastIndex;
-            bool inWord = GetWordFromPointer(pointer, out word, out firstIndex, out lastIndex);
-
-            if (inWord)
-                return word;
-            else
-                return null;
-        }
-
-        void GetWordFromPointer(TextPointer pointer, out Logic.TextInLanguage.SyntaxLayout.Word word)
-        {
-            if (pointer != null)
-            {
-                int letterIdx = GetTextIndexInParagraphFromPointer(pointer);
-
-                Logic.TextInLanguage.SyntaxLayout.WordInSentenceIndex index;
-                bool inWord = Global.CurrentWorkspace.CurrentArticle.OriginalText.Layout.GetWordInSentenceIndexByTextLetterIndex(letterIdx, out index);
-                var wordData = Global.CurrentWorkspace.CurrentArticle.OriginalText.Layout.GetWordByIndex(index);
-
-                if (inWord)
-                    word = wordData;
-                else
-                    word = null;
-
-                return;
-            }
-
-            word = null;
-        }
-
-        bool GetWordFromPointer(TextPointer pointer, out string word, out int firstIndex, out int lastIndex)
-        {
-            Logic.TextInLanguage.SyntaxLayout.Word wordData;
-            GetWordFromPointer(pointer, out wordData);
-
-            bool wordDataExists = wordData != null;
-            if (wordDataExists)
-            {
-                word = wordData.ToString();
-                firstIndex = wordData.FirstIndex;
-                lastIndex = wordData.LastIndex;
-            }
-            else
-            {
-                word = null;
-                firstIndex = -1;
-                lastIndex = -1;
-            }
-
-            return wordDataExists;
-        }
-
         private void Paragraph_MouseMove(object sender, MouseEventArgs e)
         {
             // Если не сделать этой проверки на то что мышь изменила координату, то почему-то не будут обрабатываться события нажатий на кнопки мыши, если
@@ -324,9 +288,10 @@ namespace FLangDictionary.UI
             {
                 m_paragraphMouseMoveLastPos = Mouse.GetPosition(articleRichTextBox);
                 TextPointer pointer = articleRichTextBox.GetPositionFromPoint(Mouse.GetPosition(articleRichTextBox), false);
+                //TextPointer pointer = m_articleParagraph.GetPositionFromPoint(m_paragraphMouseMoveLastPos);
 
                 Logic.TextInLanguage.SyntaxLayout.Word mouseOverWord;
-                GetWordFromPointer(pointer, out mouseOverWord);
+                UICommon.GetWordFromPointer(pointer, Global.CurrentWorkspace.CurrentArticle.OriginalText, out mouseOverWord);
 
                 UpdateArticleVisualSelection(mouseOverWord);
 
@@ -343,8 +308,9 @@ namespace FLangDictionary.UI
         private void articleRichTextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             TextPointer pointer = articleRichTextBox.GetPositionFromPoint(Mouse.GetPosition(articleRichTextBox), false);
+            //TextPointer pointer = m_articleParagraph.GetPositionFromPoint(Mouse.GetPosition(articleRichTextBox));
             Logic.TextInLanguage.SyntaxLayout.Word word;
-            GetWordFromPointer(pointer, out word);
+            UICommon.GetWordFromPointer(pointer, Global.CurrentWorkspace.CurrentArticle.OriginalText, out word);
 
             m_articleMouseLeftButtonDownWord = word;
         }
@@ -354,8 +320,9 @@ namespace FLangDictionary.UI
             bool ctrlIsDown = Keyboard.GetKeyStates(Key.LeftCtrl).HasFlag(KeyStates.Down) || Keyboard.GetKeyStates(Key.RightCtrl).HasFlag(KeyStates.Down);
 
             TextPointer pointer = articleRichTextBox.GetPositionFromPoint(Mouse.GetPosition(articleRichTextBox), false);
+            //TextPointer pointer = m_articleParagraph.GetPositionFromPoint(Mouse.GetPosition(articleRichTextBox));
             Logic.TextInLanguage.SyntaxLayout.Word mouseOverWord;
-            GetWordFromPointer(pointer, out mouseOverWord);
+            UICommon.GetWordFromPointer(pointer, Global.CurrentWorkspace.CurrentArticle.OriginalText, out mouseOverWord);
 
             if (m_articleMouseLeftButtonDownWord == mouseOverWord)
             {
@@ -374,9 +341,6 @@ namespace FLangDictionary.UI
         {
             m_selectedWords.Clear();
             OnSelectedWordsChange();
-
-            //textBoxOriginal.Text = string.Empty;
-            //StarDictFlowDocumentBuilder.Build(string.Empty, dictionaryFlowDocument, DictionaryTermReferenceMouseUp);
         }
 
         public void SelectWord(Logic.TextInLanguage.SyntaxLayout.Word word, bool multiSelect)
@@ -400,65 +364,6 @@ namespace FLangDictionary.UI
             }
 
             OnSelectedWordsChange();
-
-            /*if (m_selectedWords.Count > 0)
-            {
-
-                string phraseAsString = string.Empty;
-                foreach (var wordInSelection in m_selectedWords)
-                    phraseAsString += wordInSelection.ToString() + (ReferenceEquals(wordInSelection, m_selectedWords[m_selectedWords.Count - 1]) ? string.Empty : " ");
-
-                textBoxOriginal.Text = phraseAsString;
-
-
-                Logic.TranslationUnit selectedTranslationUnit;
-                Logic.TranslationUnit phraseTranslationUnit;
-
-
-                bool canEditSelection;
-                Logic.TextInLanguage.SyntaxLayout.Word[] wrongWords;
-
-                // ToDo: тест. временно берем тупо первый язык в списке. надо брать из выпадающего списка (если языков вообще нет то эта функция не должна была вызваться)
-                Global.CurrentWorkspace.CurrentArticle.GetSelectedWordsInfo(Global.CurrentWorkspace.TranslationLanguages[0].Code, m_selectedWords.ToArray(),
-                    out canEditSelection, out selectedTranslationUnit, out phraseTranslationUnit, out wrongWords);
-
-
-
-
-                string selectedStr = selectedTranslationUnit == null ? "null" : selectedTranslationUnit.OriginalPhrase.Length.ToString();
-                string phraseStr = phraseTranslationUnit == null ? "null" : phraseTranslationUnit.OriginalPhrase.Length.ToString();
-
-                MessageBox.Show($"{selectedStr}\n{phraseStr}");
-
-
-
-
-
-
-                if (selectedTranslationUnit != null)
-                {
-                    textBoxTranslated.Text = selectedTranslationUnit.translatedPhrase;
-                    textBoxOriginalInfinitive.Text = selectedTranslationUnit.infinitiveTranslation.originalPhrase;
-                    textBoxTranslatedInfinitive.Text = selectedTranslationUnit.infinitiveTranslation.translatedPhrase;
-                }
-                else
-                {
-                    textBoxTranslated.Text = textBoxOriginalInfinitive.Text = textBoxTranslatedInfinitive.Text = null;
-                }
-
-                if (phraseTranslationUnit != null)
-                {
-                    MessageBox.Show(phraseTranslationUnit.translatedPhrase);
-                }
-
-                if (m_dict != null)
-                {
-                    string translation = m_dict.LookupWord(phraseAsString);
-                    StarDictFlowDocumentBuilder.Build(translation, dictionaryFlowDocument, DictionaryTermReferenceMouseUp);
-                }
-            }
-            else
-                ClearSelectedWords();*/
         }
 
         // Устанавливает состояние для панели редактирования translation unit для выделенного слова/фразы
@@ -519,7 +424,7 @@ namespace FLangDictionary.UI
             }
             else if (m_selectedWords.Count == 1)
             {
-                SetTranslationUnitAreaState(true, Global.CurrentWorkspace.CurrentArticle.GetTranslation(selectedTranslationLanguageCode, m_selectedWords[0]));
+                SetTranslationUnitAreaState(true, Global.CurrentWorkspace.CurrentArticle.GetWordTranslation(selectedTranslationLanguageCode, m_selectedWords[0]));
                 m_wrongWords.Clear();
 
                 var phraseTranslationUnit = Global.CurrentWorkspace.CurrentArticle.GetPhraseTranslation(selectedTranslationLanguageCode, m_selectedWords[0]);

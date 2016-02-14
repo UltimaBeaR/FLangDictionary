@@ -4,8 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace FLangDictionary
 {
@@ -39,6 +42,11 @@ namespace FLangDictionary
     // и привязанные к прямоугольничку временные метки начала/конца оффсета в аудио-файле
 
     // ToDo: Нужно сделать поддержку выделения текста, но не выделять по одной букве а сразу по слову, тоесть юзер тащит мышку и выделяются все слова, которые под мышкой, плюс ctrl тоже должен работать.
+
+
+    // ToDo: Еще парочка полезных идей - можно сделать режим, чтобы звук игрался по одному предложения, так как предложения определяются автоматом. И было 2 хоткея - один на пере-воспроизведение предложения, второй - проиграть
+    // следующее предложение. Далее еще одна функция - режим записи своего голоса. То есть к примеру - слушаешь какой то кусок текста и записываешь его, чтобы можно было сравнить произношение свое и оригинала. Это важно сделать чтобы было быстро и ненапряжно записывать фразы от своего голоса.
+
 
     static class Global
     {
@@ -234,6 +242,72 @@ namespace FLangDictionary
             catch (IOException)
             {
                 return false;
+            }
+        }
+
+        public static void Debug_ImportCurrentArticleFromXML(string xmlFileName)
+        {
+            // ToDo: сделать чтение, полностью перевести какую нибудь статью нормальную, сохранить ее бэкап в виде xml
+            // Далее уже можно потихоньку добавлять аудио-поддержку и интерфейс в котором слова ассоциируются с аудиодорожкой(смотреть тетрадку как это выглядит)
+            // Это можно сделать отдельное view. Либо в режим редактирование/ассоцииорование встроить эту штуку (можно как диалоговое окно)
+
+            /*
+            using (XmlTextReader reader = new XmlTextReader(xmlFileName))
+            {
+                reader.Read();
+
+                //reader.ReadStartElement("Article");
+
+                string name = reader.GetAttribute("Name");
+
+                reader.ReadEndElement();
+
+                MessageBox.Show(name);
+            }
+            */
+        }
+
+        public static void Debug_ExportCurrentArticleToXML(string xmlFileName)
+        {
+            using (XmlTextWriter writer = new XmlTextWriter(xmlFileName, Encoding.UTF8))
+            {
+                writer.Formatting = Formatting.Indented;
+                writer.Indentation = 4;
+
+                Data.Article currentArticle = CurrentWorkspace.CurrentArticle;
+
+                writer.WriteStartDocument();
+
+                writer.WriteStartElement("Article"); //< <Article>
+
+                writer.WriteAttributeString("ExportDate", DateTime.Now.ToShortDateString());
+                writer.WriteAttributeString("Name", currentArticle.Name);
+                writer.WriteAttributeString("Text", currentArticle.OriginalText.Text);
+
+                foreach (var lang in CurrentWorkspace.TranslationLanguages)
+                {
+                    writer.WriteStartElement("TranslationLanguage"); //< <TranslationLanguage>
+                    writer.WriteAttributeString("Code", lang.Code);
+
+                    foreach (var translation in currentArticle.GetTranslations(lang.Code))
+                    {
+                        writer.WriteStartElement("Translation"); // <Translation>
+
+                        writer.WriteAttributeString("OriginalPhraseIndexes", Logic.TextInLanguage.GetPhraseIndexes(translation.OriginalPhrase));
+                        writer.WriteAttributeString("TranslatedPhrase", translation.translatedPhrase);
+                        writer.WriteAttributeString("InfinitiveOriginalPhrase", translation.infinitiveTranslation.originalPhrase);
+                        writer.WriteAttributeString("InfinitiveTranslatedPhrase", translation.infinitiveTranslation.translatedPhrase);
+
+                        writer.WriteEndElement(); // </ Translation>
+                    }
+
+                    writer.WriteEndElement(); //< </TranslationLanguage>
+                }
+
+                writer.WriteEndElement(); //< </Article>
+
+                writer.WriteEndDocument();
+
             }
         }
     }

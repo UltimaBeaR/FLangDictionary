@@ -9,6 +9,55 @@
       Loaded="Page_Loaded"
       Unloaded="Page_Unloaded">
     <Grid>
-        <Label x:Name="label" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <!--Верхняя часть - текст статьи-->
+        <Grid Grid.Row="0">            
+            <Label x:Name="articleLabel" />
+            <FlowDocumentScrollViewer BorderBrush="Black" BorderThickness="2" x:Name="originalArticleScrollViewer">
+                <FlowDocument Background="Beige">          
+                    <Paragraph MouseMove="Paragraph_MouseMove" MouseLeave="Paragraph_MouseLeave" />
+                </FlowDocument>
+            </FlowDocumentScrollViewer>
+            
+            <!-- Всплывающая подсказка с переводом -->
+            <Popup StaysOpen="True" Placement="Relative" PlacementTarget="{Binding ElementName=originalArticleScrollViewer}" x:Name="articlePopup">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Vertical" Background="GreenYellow" x:Name="articlePopup_phrase">
+                        <Label x:Name="articlePopup_phrase_source" />
+                        <Label FontSize="20" x:Name="articlePopup_phrase_translation" />
+                        <Label x:Name="articlePopup_phrase_infinitive" />
+                    </StackPanel>
+                    <Line Height="1" x:Name="articlePopup_line" />
+                    <StackPanel Orientation="Vertical" Background="Bisque" x:Name="articlePopup_word">
+                        <Label x:Name="articlePopup_word_source" />
+                        <Label FontSize="20" x:Name="articlePopup_word_translation" />
+                        <Label x:Name="articlePopup_word_infinitive" />
+                    </StackPanel>
+                </StackPanel>
+            </Popup>
+        </Grid>
+        
+        <GridSplitter Grid.Row="1" Height="3" ShowsPreview="False" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Gray" />
+        
+        <!--Нижняя часть - текст художественного перевода-->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Label Content="Язык худ. перевода" />
+                <ComboBox Width="100" x:Name="artisticalTranslationLanguageComboBox" />
+            </StackPanel>
+            <FlowDocumentScrollViewer Grid.Row="1" BorderBrush="Black" BorderThickness="2" x:Name="translationTextFinished">
+                <FlowDocument Background="Beige" />
+            </FlowDocumentScrollViewer>
+        </Grid>
     </Grid>
 </Page>

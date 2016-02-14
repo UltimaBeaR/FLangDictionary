@@ -236,13 +236,23 @@ namespace FLangDictionary.Data
             }            
         }*/
 
+        // Получает список всех переводов (и фраз и слов)
+        public IReadOnlyList<TranslationUnit> GetTranslations(string languageCode)
+        {
+            // Получаем для заданного языка все еденицы перевода
+            List<TranslationUnit> translationLanguageUnits;
+            bool languageExists = m_translationUnits.TryGetValue(languageCode, out translationLanguageUnits);
+            Debug.Assert(languageExists);
 
-
-
+            return translationLanguageUnits;
+        }
 
         // Получает перевод (если таковой есть) для заданного слова. То есть перевод самого слова, без фразы
-        public TranslationUnit GetTranslation(string languageCode, TextInLanguage.SyntaxLayout.Word word)
+        public TranslationUnit GetWordTranslation(string languageCode, TextInLanguage.SyntaxLayout.Word word)
         {
+            if (word == null)
+                return null;
+
             // Получаем для заданного языка все еденицы перевода
             List<TranslationUnit> translationLanguageUnits;
             bool languageExists = m_translationUnits.TryGetValue(languageCode, out translationLanguageUnits);
@@ -263,6 +273,9 @@ namespace FLangDictionary.Data
         // Только одна то тут либо будет ее перевод либо будет null, в случае если фразы у этого слова нет
         public TranslationUnit GetPhraseTranslation(string languageCode, TextInLanguage.SyntaxLayout.Word wordInPhrase)
         {
+            if (wordInPhrase == null)
+                return null;
+
             // Получаем для заданного языка все еденицы перевода
             List<TranslationUnit> translationLanguageUnits;
             bool languageExists = m_translationUnits.TryGetValue(languageCode, out translationLanguageUnits);

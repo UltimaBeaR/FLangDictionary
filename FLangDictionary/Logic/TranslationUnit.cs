@@ -40,5 +40,14 @@ namespace FLangDictionary.Logic
         public string originalPhrase;
         // Переведенный (на язык перевода) вариант слова или фразы
         public string translatedPhrase;
+
+        // Задан ли инфинитив
+        public bool HasValue
+        {
+            get
+            {
+                return originalPhrase != null && translatedPhrase != null;
+            }
+        }
     }
 }

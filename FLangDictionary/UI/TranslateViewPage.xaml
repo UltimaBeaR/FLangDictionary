@@ -32,7 +32,7 @@
                         </Grid.ColumnDefinitions>
                         
                         <Label Grid.Column="0" Content="Translation language" />
-                        <ComboBox Grid.Column="1" />    
+                        <ComboBox Grid.Column="1" x:Name="comboBoxTranslationLanguage" />    
                     </Grid>
                     
                     <Grid Grid.Row="0">
